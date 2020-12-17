@@ -4,9 +4,8 @@
       default-active="4"
       @open="handleOpen"
       @close="handleClose"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
+      background-color="#eee"
+      active-text-color="#2B63A3"
       router
     >
       <el-submenu index="1">
@@ -57,7 +56,15 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'Aside'
+  name: 'Aside',
+  methods: {
+    handleOpen (key: string, keyPath: string) {
+      console.log(key, keyPath)
+    },
+    handleClose (key: string, keyPath: string) {
+      console.log(key, keyPath)
+    }
+  }
 })
 </script>
 
@@ -65,6 +72,7 @@ export default Vue.extend({
 .aside {
   .el-menu {
     min-height: 100vh;
+    width: 200px;
   }
 }
 </style>
