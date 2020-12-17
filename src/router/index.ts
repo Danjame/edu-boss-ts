@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-// import Home from '../views/Home.vue'
 import Layout from '@/layout/index.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -14,6 +14,9 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     component: Layout,
+    meta: {
+      requiresAuth: true
+    },
     children: [
       {
         path: '',
@@ -61,6 +64,24 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   routes
+})
+
+// 导航守卫
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(path => path.meta.requiresAuth)) {
+    if (store.state.user) {
+      next()
+    } else {
+      next({
+        name: 'login',
+        query: {
+          redirect: to.path
+        }
+      })
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

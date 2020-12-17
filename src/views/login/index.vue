@@ -8,11 +8,11 @@
       :rules="rules"
       label-width="80px"
     >
-      <el-form-item label="手机号">
+      <el-form-item label="手机号" prop="phone">
         <el-input v-model="form.phone"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
-        <el-input v-model="form.password"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -30,8 +30,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import request from '@/utils/request'
-import qs from 'qs'
+import { login } from '@/services/user'
+import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'Login',
@@ -56,15 +56,23 @@ export default Vue.extend({
   },
   methods: {
     async onSubmit () {
-      console.log('submit')
-      const { data } = await request({
-        method: 'POST',
-        url: '/front/user/login',
-        headers: { 'content-type': 'application/x-wwww-form-urlencoded' },
-        data: qs.stringify(this.form)
-      })
-
-      console.log(data)
+      try {
+        await (this.$refs.form as Form).validate()
+        this.isLoginLoading = true
+        const { data } = await login(this.form)
+        if (data.state !== 1) {
+          this.$message.error(data.message)
+        } else {
+          this.$store.commit('setUser', data.content)
+          this.$message.success('登陆成功')
+          this.$router.push({
+            name: 'home'
+          })
+        }
+      } catch (err) {
+        console.log('登陆失败', err)
+      }
+      this.isLoginLoading = false
     }
   }
 })
