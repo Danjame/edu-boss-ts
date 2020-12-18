@@ -68,16 +68,16 @@ const router = new VueRouter({
 
 // 导航守卫
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(path => path.meta.requiresAuth)) {
-    if (store.state.user) {
-      next()
-    } else {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.state.user) {
       next({
         name: 'login',
         query: {
-          redirect: to.path
+          redirect: to.fullPath
         }
       })
+    } else {
+      next()
     }
   } else {
     next()

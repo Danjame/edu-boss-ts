@@ -65,9 +65,7 @@ export default Vue.extend({
         } else {
           this.$store.commit('setUser', data.content)
           this.$message.success('登陆成功')
-          this.$router.push({
-            name: 'home'
-          })
+          this.$router.push(this.$route.query.redirect as string || '/')
         }
       } catch (err) {
         console.log('登陆失败', err)
