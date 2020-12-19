@@ -1,6 +1,6 @@
 <template>
-  <div class="menu-create">
-    <edit-delete :isEdit="false" />
+  <div class="menu-edit">
+    <edit-delete />
   </div>
 </template>
 
@@ -9,7 +9,7 @@ import Vue from 'vue'
 import EditDelete from './components/EditDelete.vue'
 
 export default Vue.extend({
-  name: 'MenuCreate',
+  name: 'MenuEdit',
   components: {
     EditDelete
   }

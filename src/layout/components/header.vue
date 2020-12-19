@@ -50,6 +50,7 @@ export default Vue.extend({
         this.$router.push({
           name: 'login'
         })
+        this.$message.success('成功退出')
       }).catch(() => {
         console.log('取消退出')
       })

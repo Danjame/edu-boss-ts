@@ -11,6 +11,13 @@ import request from '@/utils/request'
 //   shown: boolean
 // }
 
+export const getAll = () => {
+  return request({
+    method: 'GET',
+    url: '/boss/menu/getAll'
+  })
+}
+
 export const saveOrUpdate = (data: object) => {
   return request({
     method: 'POST',
@@ -26,5 +33,12 @@ export const getEditMenuInfo = (id = -1) => {
     params: {
       id
     }
+  })
+}
+
+export const deleteMenu = (id: number) => {
+  return request({
+    method: 'DELETE',
+    url: `/boss/menu/${id}`
   })
 }
