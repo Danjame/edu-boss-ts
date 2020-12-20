@@ -2,48 +2,35 @@
   <div class="resource">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-button @click="$router.push({name: 'menu-create' })">添加菜单</el-button>
+        <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
+          <el-form-item label="资源名称" prop="name">
+            <el-input v-model="form.name" placeholder="资源名称"></el-input>
+          </el-form-item>
+          <el-form-item label="资源路径" prop="url">
+            <el-input v-model="form.url" placeholder="资源路径"></el-input>
+          </el-form-item>
+          <el-form-item label="资源分类" prop="categoryId">
+            <el-select v-model="form.categoryId" placeholder="全部">
+              <el-option v-for="item in category" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="resetForm('form')">重置</el-button>
+            <el-button type="primary" @click="onSubmit">查询搜索</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="box-card-btns">
+          <el-button>添加</el-button>
+          <el-button>资源分类</el-button>
+        </div>
       </div>
-      <el-table
-      :data="tableData"
-      style="width: 100%">
-        <el-table-column
-          prop="id"
-          label="编号"
-          width="100"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="菜单名称"
-          width="180"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="level"
-          label="菜单级数"
-          align="center"
-        >
-        </el-table-column>
-          <el-table-column
-          prop="icon"
-          label="前端图标"
-          align="center"
-        >
-        </el-table-column>
-          <el-table-column
-          prop="orderNum"
-          label="排序"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          min-width="150"
-          align="center"
-        >
+      <el-table :data="resource" style="width: 100%">
+        <el-table-column prop="id" label="编号" width="100" align="center" />
+        <el-table-column prop="name" label="资源名称" width="180" align="center" />
+        <el-table-column prop="url" label="资源路径" align="center" />
+        <el-table-column prop="description" label="描述" align="center" />
+        <el-table-column prop="createdTime" label="添加时间" align="center" />
+        <el-table-column label="操作" min-width="150" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -56,23 +43,88 @@
         </el-table-column>
       </el-table>
     </el-card>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="form.current"
+      :page-sizes="[10, 15, 20, 25]"
+      :page-size="form.size"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { getAllGategory, getResourcePages } from '@/services/resource'
+import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'Resource',
+  data () {
+    return {
+      form: {
+        name: '',
+        url: '',
+        categoryId: '',
+        current: 1,
+        size: 10
+      },
+      total: '',
+      resource: [],
+      category: []
+    }
+  },
+  created () {
+    this.loadResource()
+    this.loadAllGategory()
+  },
   methods: {
+    async loadResource () {
+      const { data } = await getResourcePages(this.form)
+      if (data.code === '000000') {
+        this.resource = data.data.records
+        this.total = data.data.total
+      }
+    },
+    async loadAllGategory () {
+      const { data } = await getAllGategory()
+      if (data.code === '000000') {
+        this.category = data.data
+      }
+    },
     handleEdit (index: number, row: any) {
       console.log(index, row)
     },
     handleDelete (index: number, row: any) {
       console.log(index, row)
+    },
+    onSubmit () {
+      console.log('submit!')
+      this.loadResource()
+    },
+    resetForm (form: string) {
+      (this.$refs[form] as Form).resetFields()
+    },
+    handleSizeChange (size: number) {
+      this.form.size = size
+      this.loadResource()
+      console.log(`每页 ${size} 条`)
+    },
+    handleCurrentChange (current: number) {
+      this.form.current = current
+      this.loadResource()
+      console.log(`当前页: ${current}`)
     }
   }
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.box-card-btns{
+  border-top: 1px solid #EBEEF5;
+  padding-top: 18px;
+}
+</style>
