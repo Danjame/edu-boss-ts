@@ -21,3 +21,21 @@ export const getResourcePages = (data: object) => {
     data
   })
 }
+
+export const getEditResourceInfo = (id: any = -1) => {
+  return request({
+    method: 'GET',
+    url: '/boss/resource',
+    params: {
+      id
+    }
+  })
+}
+
+export const saveOrUpdate = (data: object) => {
+  return request({
+    method: 'POST',
+    url: '/boss/resource/saveOrUpdate',
+    data
+  })
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-delete">
+  <div class="edit-create">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>{{isEdit? '编辑菜单' : '添加菜单'}}</span>
@@ -56,7 +56,7 @@ import { saveOrUpdate, getEditMenuInfo } from '@/services/menu'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
-  name: 'EditDelete',
+  name: 'EditCreate',
   props: {
     isEdit: {
       type: Boolean,

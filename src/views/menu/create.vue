@@ -1,17 +1,17 @@
 <template>
   <div class="menu-create">
-    <edit-delete :isEdit="false" />
+    <edit-create :isEdit="false" />
   </div>
 </template>
 
 <script lang='ts'>
 import Vue from 'vue'
-import EditDelete from './components/EditDelete.vue'
+import EditCreate from './components/EditCreate.vue'
 
 export default Vue.extend({
   name: 'MenuCreate',
   components: {
-    EditDelete
+    EditCreate
   }
 })
 </script>
