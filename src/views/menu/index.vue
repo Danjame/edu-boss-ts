@@ -78,13 +78,15 @@ export default Vue.extend({
       const { data } = await getAll()
       this.tableData = data.data
     },
-    handleEdit (index: number, row: object) {
-      console.log(index, row)
+    handleEdit (index: number, row: any) {
+      // console.log(index, row)
       this.$router.push({
-        name: 'menu-edit'
+        name: 'menu-edit',
+        query: {
+          id: row.id
+        }
       })
     },
-    // eslint-disable-next-line
     handleDelete (index: number, row: any) {
       this.$confirm('确认删除？')
         .then(async () => {

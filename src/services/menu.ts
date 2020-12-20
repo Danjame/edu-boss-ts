@@ -26,7 +26,7 @@ export const saveOrUpdate = (data: object) => {
   })
 }
 
-export const getEditMenuInfo = (id = -1) => {
+export const getEditMenuInfo = (id: any = -1) => {
   return request({
     method: 'GET',
     url: '/boss/menu/getEditMenuInfo',

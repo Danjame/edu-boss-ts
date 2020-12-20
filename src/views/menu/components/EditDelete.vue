@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>{{isEdit? '编辑菜单' : '添加菜单'}}</span>
       </div>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -66,13 +66,22 @@ export default Vue.extend({
   data () {
     return {
       form: {
-        parentId: -1,
         name: '',
         href: '',
-        icon: '',
-        orderNum: null,
+        parentId: -1,
         description: '',
-        shown: false
+        icon: '',
+        shown: false,
+        orderNum: null
+      },
+      rules: {
+        name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
+        href: [{ required: false, message: '请输入菜单路径', trigger: 'blur' }],
+        parentId: [{ required: false, message: '请选择上级菜单', trigger: 'blur' }],
+        description: [{ required: true, message: '请选择上级菜单', trigger: 'blur' }],
+        icon: [{ required: true, message: '请选择上级菜单', trigger: 'blur' }],
+        shown: [{ required: false, message: '请选择上级菜单', trigger: 'blur' }],
+        orderNum: [{ required: false, message: '请选择排序号码', trigger: 'blur' }]
       },
       parentMenuList: []
     }
@@ -82,15 +91,24 @@ export default Vue.extend({
   },
   methods: {
     async loadEditMenuInfo () {
-      const { data } = await getEditMenuInfo()
-      this.parentMenuList = data.data.parentMenuList
+      const { data } = this.$route.query.id ? await getEditMenuInfo(this.$route.query.id) : await getEditMenuInfo()
+      if (data.code === '000000') {
+        this.parentMenuList = data.data.parentMenuList
+      }
+      if (data.data.menuInfo) {
+        this.form = data.data.menuInfo
+      }
     },
     async onSubmit () {
-      console.log('submite')
-      const { data } = await saveOrUpdate(this.form)
-      if (data.code === '000000') {
-        this.$message.success('提交成功')
-        this.$router.back()
+      try {
+        await (this.$refs.form as Form).validate()
+        const { data } = await saveOrUpdate(this.form)
+        if (data.code === '000000') {
+          this.$message.success('提交成功')
+          this.$router.back()
+        }
+      } catch (err) {
+        console.log('提交失败', err)
       }
     },
     resetForm (form: string) {
