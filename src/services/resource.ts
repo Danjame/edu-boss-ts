@@ -25,10 +25,7 @@ export const getResourcePages = (data: object) => {
 export const getEditResourceInfo = (id: any = -1) => {
   return request({
     method: 'GET',
-    url: '/boss/resource',
-    params: {
-      id
-    }
+    url: `/boss/resource/${id}`
   })
 }
 
@@ -37,5 +34,12 @@ export const saveOrUpdate = (data: object) => {
     method: 'POST',
     url: '/boss/resource/saveOrUpdate',
     data
+  })
+}
+
+export const deleteResource = (id: number) => {
+  return request({
+    method: 'DELETE',
+    url: `/boss/resource/${id}`
   })
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="edit-create">
-    <el-dialog :title="itemId?'编辑资源':'添加资源'" :visible.sync="isVisible">
+    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible">
       <el-form :model="form" :rules="rules" ref="form">
         <el-form-item label="资源名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name"></el-input>
@@ -27,22 +27,19 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import EventBus from '@/eventbus/eventbus'
 import { getAllGategory, getEditResourceInfo, saveOrUpdate } from '@/services/resource'
+import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'EditCreate',
-  props: {
-    isVisible: {
-      type: Boolean,
-      default: false
-    },
-    itemId: {
-      type: Number
-    }
-  },
   data () {
     return {
+      isVisible: false,
+      isEdit: false,
+      formLabelWidth: '120px',
       form: {
+        id: 0,
         name: '',
         url: '',
         categoryId: '',
@@ -54,14 +51,30 @@ export default Vue.extend({
         categoryId: [{ required: true, message: '请选择资源分类', trigger: 'blur' }],
         description: [{ required: true, message: '请选择资源分类', trigger: 'blur' }]
       },
-      formLabelWidth: '120px',
       category: []
     }
   },
   created () {
-    console.log(this.itemId)
     this.loadAllGategory()
-    this.loadEditResourceInfo()
+    // 打开关闭编辑添加组件
+    EventBus.$on('editCreate', (data: number) => {
+      if (data) {
+        this.form.id = data
+        this.loadEditResourceInfo()
+      } else {
+        this.form.id = 0
+      }
+      this.isVisible = true
+    })
+  },
+  watch: {
+    // 当关闭编辑添加组件，还原表单
+    isVisible: function () {
+      if (!this.isVisible) {
+        (this.$refs.form as Form).resetFields()
+        this.form.id = 0
+      }
+    }
   },
   methods: {
     async loadAllGategory () {
@@ -71,21 +84,42 @@ export default Vue.extend({
       }
     },
     async loadEditResourceInfo () {
-      if (this.itemId) {
-        const { data } = await getEditResourceInfo(this.itemId)
-        console.log(data)
+      if (this.form.id) {
+        try {
+          const { data } = await getEditResourceInfo(this.form.id)
+          if (data.code === '000000') {
+            this.form = data.data
+          }
+        } catch (err) {
+          this.$message.error(`请求失败${err}`)
+        }
       }
     },
     handleHide () {
-      this.$emit('hideEditCreate', false)
+      this.isVisible = false
     },
     async onSubmit () {
-      if (this.itemId) {
-        // this.form.itemId
+      try {
+        await (this.$refs.form as Form).validate()
+        let params
+        if (this.form.id) {
+          // 编辑资源传id
+          params = this.form
+        } else {
+          // 添加资源不传id
+          const { name, url, categoryId, description } = this.form
+          params = { name, url, categoryId, description }
+        }
+        const { data } = await saveOrUpdate(params)
+        if (data.code === '000000') {
+          // 编辑更新完毕刷新列表
+          EventBus.$emit('updateList')
+          this.handleHide()
+        }
+      } catch (err) {
+        console.log(err)
+        this.$message.error(`提交失败${err}`)
       }
-      const { data } = await saveOrUpdate(this.form)
-      console.log(data)
-      this.handleHide()
     }
   }
 })

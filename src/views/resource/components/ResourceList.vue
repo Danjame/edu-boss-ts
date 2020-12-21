@@ -59,7 +59,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAllGategory, getResourcePages } from '@/services/resource'
+import EventBus from '@/eventbus/eventbus'
+import { getAllGategory, getResourcePages, deleteResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
@@ -80,6 +81,10 @@ export default Vue.extend({
     }
   },
   created () {
+    // 编辑更新完毕刷新列表
+    EventBus.$on('updateList', () => {
+      this.loadResource()
+    })
     this.loadResource()
     this.loadAllGategory()
   },
@@ -99,22 +104,29 @@ export default Vue.extend({
         this.category = data.data
       }
     },
-    handleEdit (index: number, row: any) {
+    async deleteResource (id: number) {
+      const { data } = await deleteResource(id)
+      if (data.code === '000000') {
+        // 删除后更新列表
+        this.loadResource()
+      }
+    },
+    handleEdit (index: number, item: any) {
       // console.log(index, row)
-      this.$emit('showEditCreate', {
-        visible: true,
-        id: row.id
+      EventBus.$emit('editCreate', item.id)
+    },
+    handleDelete (index: number, item: any) {
+      // console.log(index, row)
+      this.$confirm('确定删除？').then(() => {
+        this.deleteResource(item.id)
+      }).catch(err => {
+        console.log('已取消', err)
       })
     },
-    handleDelete (index: number, row: any) {
-      // console.log(index, row)
-    },
     handleCreate () {
-      // console.log('create')
-      this.$emit('showEditCreate', { visible: true })
+      EventBus.$emit('editCreate')
     },
     onSubmit () {
-      // console.log('submit!')
       this.form.current = 1
       this.loadResource()
     },

@@ -1,7 +1,7 @@
 <template>
   <div class="resource">
-    <resource-list @showEditCreate="handleEditCreate" />
-    <edit-create :itemId="itemId" :isVisible="editCreateVisible" @hideEditCreate="handleEditCreate"/>
+    <resource-list />
+    <edit-create />
   </div>
 </template>
 
@@ -15,20 +15,6 @@ export default Vue.extend({
   components: {
     ResourceList,
     EditCreate
-  },
-  data () {
-    return {
-      editCreateVisible: false,
-      itemId: null
-    }
-  },
-  methods: {
-    handleEditCreate (data: object) {
-      this.editCreateVisible = data.visible
-      if (data.id) {
-        this.itemId = data.id
-      }
-    }
   }
 })
 </script>
