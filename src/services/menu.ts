@@ -1,24 +1,13 @@
 import request from '@/utils/request'
 
-// interface Menu{
-//   id: number | undefined
-//   parentId: string
-//   name: string
-//   href: string
-//   icon: string
-//   orderNum: number
-//   description: string
-//   shown: boolean
-// }
-
-export const getAll = () => {
+export const getAllMenus = () => {
   return request({
     method: 'GET',
     url: '/boss/menu/getAll'
   })
 }
 
-export const saveOrUpdate = (data: object) => {
+export const saveOrUpdateMenu = (data: object) => {
   return request({
     method: 'POST',
     url: '/boss/menu/saveOrUpdate',

@@ -21,7 +21,7 @@
         </el-form>
         <div class="box-card-btns">
           <el-button @click="handleCreate">添加</el-button>
-          <el-button>资源分类</el-button>
+          <el-button @click="$router.push({name: 'resource-category'})">资源分类</el-button>
         </div>
       </div>
       <el-table :data="resource" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
@@ -60,7 +60,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllGategory, getResourcePages, deleteResource } from '@/services/resource'
+import { getAllGategories, getResourcePages, deleteResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
@@ -95,20 +95,29 @@ export default Vue.extend({
       if (data.code === '000000') {
         this.resource = data.data.records
         this.total = data.data.total
+      } else {
+        this.$message.error(`加载失败：${data.mesg}`)
       }
       this.isLoading = false
     },
     async loadAllGategory () {
-      const { data } = await getAllGategory()
+      const { data } = await getAllGategories()
       if (data.code === '000000') {
         this.category = data.data
+      } else {
+        this.$message.error(`加载失败：${data.mesg}`)
       }
     },
     async deleteResource (id: number) {
       const { data } = await deleteResource(id)
-      if (data.code === '000000') {
-        // 删除后更新列表
-        this.loadResource()
+      switch (data.code) {
+        case '000000':
+          // 删除后更新列表
+          this.loadResource()
+          break
+        case '10000':
+          this.$message.error(`提交失败：${data.mesg}`)
+          break
       }
     },
     handleEdit (index: number, item: any) {

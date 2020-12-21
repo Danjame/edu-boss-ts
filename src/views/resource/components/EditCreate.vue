@@ -1,6 +1,6 @@
 <template>
   <div class="edit-create">
-    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible">
+    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible" width="30%">
       <el-form :model="form" :rules="rules" ref="form">
         <el-form-item label="资源名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name"></el-input>
@@ -28,16 +28,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllGategory, getEditResourceInfo, saveOrUpdate } from '@/services/resource'
+import { getAllGategories, getEditResourceInfo, saveOrUpdateResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'EditCreate',
   data () {
     return {
-      isVisible: false,
-      isEdit: false,
-      formLabelWidth: '120px',
       form: {
         id: 0,
         name: '',
@@ -46,12 +43,15 @@ export default Vue.extend({
         description: ''
       },
       rules: {
-        name: [{ required: true, message: '请选择资源分类', trigger: 'blur' }],
-        url: [{ required: true, message: '请选择资源分类', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
+        url: [{ required: true, message: '请选择资源路径', trigger: 'blur' }],
         categoryId: [{ required: true, message: '请选择资源分类', trigger: 'blur' }],
-        description: [{ required: true, message: '请选择资源分类', trigger: 'blur' }]
+        description: [{ required: true, message: '请输入资源描述', trigger: 'blur' }]
       },
-      category: []
+      category: [],
+      isVisible: false,
+      isEdit: false,
+      formLabelWidth: '120px'
     }
   },
   created () {
@@ -61,8 +61,6 @@ export default Vue.extend({
       if (data) {
         this.form.id = data
         this.loadEditResourceInfo()
-      } else {
-        this.form.id = 0
       }
       this.isVisible = true
     })
@@ -78,7 +76,7 @@ export default Vue.extend({
   },
   methods: {
     async loadAllGategory () {
-      const { data } = await getAllGategory()
+      const { data } = await getAllGategories()
       if (data.code === '000000') {
         this.category = data.data
       }
@@ -110,15 +108,20 @@ export default Vue.extend({
           const { name, url, categoryId, description } = this.form
           params = { name, url, categoryId, description }
         }
-        const { data } = await saveOrUpdate(params)
-        if (data.code === '000000') {
-          // 编辑更新完毕刷新列表
-          EventBus.$emit('updateList')
-          this.handleHide()
+        const { data } = await saveOrUpdateResource(params)
+        switch (data.code) {
+          case '000000':
+            // 编辑更新完毕刷新列表
+            EventBus.$emit('updateList')
+            this.handleHide()
+            break
+          case '10000':
+            this.$message.error(`提交失败：${data.mesg}`)
+            break
         }
       } catch (err) {
         console.log(err)
-        this.$message.error(`提交失败${err}`)
+        this.$message.error(`提交失败：${err}`)
       }
     }
   }

@@ -7,10 +7,13 @@ export const getAllRource = () => {
   })
 }
 
-export const getAllGategory = () => {
+export const getAllGategories = (id: any) => {
   return request({
     method: 'GET',
-    url: '/boss/resource/category/getAll'
+    url: '/boss/resource/category/getAll',
+    params: {
+      resourceId: id
+    }
   })
 }
 
@@ -29,7 +32,7 @@ export const getEditResourceInfo = (id: any = -1) => {
   })
 }
 
-export const saveOrUpdate = (data: object) => {
+export const saveOrUpdateResource = (data: object) => {
   return request({
     method: 'POST',
     url: '/boss/resource/saveOrUpdate',
@@ -41,5 +44,15 @@ export const deleteResource = (id: number) => {
   return request({
     method: 'DELETE',
     url: `/boss/resource/${id}`
+  })
+}
+
+export const saveOrUpdateCategories = (id: number) => {
+  return request({
+    method: 'POST',
+    url: '/boss/resource/category/saveOrderUpdate',
+    params: {
+      id
+    }
   })
 }

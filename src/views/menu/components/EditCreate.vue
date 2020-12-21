@@ -52,7 +52,7 @@
 
 <script lang='ts'>
 import Vue from 'vue'
-import { saveOrUpdate, getEditMenuInfo } from '@/services/menu'
+import { saveOrUpdateMenu, getEditMenuInfo } from '@/services/menu'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
@@ -102,7 +102,7 @@ export default Vue.extend({
     async onSubmit () {
       try {
         await (this.$refs.form as Form).validate()
-        const { data } = await saveOrUpdate(this.form)
+        const { data } = await saveOrUpdateMenu(this.form)
         if (data.code === '000000') {
           this.$message.success('提交成功')
           this.$router.back()
