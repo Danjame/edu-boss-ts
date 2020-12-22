@@ -112,7 +112,7 @@ export default Vue.extend({
         switch (data.code) {
           case '000000':
             // 编辑更新完毕刷新列表
-            EventBus.$emit('updateList')
+            EventBus.$emit('updateResourceList')
             this.handleHide()
             break
           case '10000':

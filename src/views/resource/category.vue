@@ -121,6 +121,7 @@ export default Vue.extend({
       })
     },
     handleDelete (index: number, row: Item) {
+      // console.log(index, row)
       this.$confirm('确认删除？')
         .then(() => {
           this.deleteCategory(row.id)

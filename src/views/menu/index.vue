@@ -72,19 +72,20 @@ export default Vue.extend({
           break
       }
     },
-    handleEdit (index: number, item: Item) {
+    handleEdit (index: number, row: Item) {
       // console.log(index, row)
       this.$router.push({
         name: 'menu-edit',
         query: {
-          id: String(item.id)
+          id: String(row.id)
         }
       })
     },
-    handleDelete (index: number, item: Item) {
+    handleDelete (index: number, row: Item) {
+      // console.log(index, row)
       this.$confirm('确认删除？')
         .then(() => {
-          this.deleteMenu(item.id)
+          this.deleteMenu(row.id)
         }).catch(err => {
           console.log('取消', err)
         })

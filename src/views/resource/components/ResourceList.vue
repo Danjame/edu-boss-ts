@@ -68,7 +68,7 @@ interface Item {
 }
 
 export default Vue.extend({
-  name: 'Resource',
+  name: 'ResourceList',
   data () {
     return {
       form: {
@@ -86,14 +86,14 @@ export default Vue.extend({
   },
   created () {
     // 编辑更新完毕刷新列表
-    EventBus.$on('updateList', () => {
-      this.loadResource()
+    EventBus.$on('updateResourceList', () => {
+      this.loadAllResource()
     })
-    this.loadResource()
+    this.loadAllResource()
     this.loadAllGategory()
   },
   methods: {
-    async loadResource () {
+    async loadAllResource () {
       this.isLoading = true
       const { data } = await getResourcePages(this.form)
       if (data.code === '000000') {
@@ -117,21 +117,21 @@ export default Vue.extend({
       switch (data.code) {
         case '000000':
           // 删除后更新列表
-          this.loadResource()
+          this.loadAllResource()
           break
         case '10000':
           this.$message.error(`删除失败：${data.mesg}`)
           break
       }
     },
-    handleEdit (index: number, item: Item) {
+    handleEdit (index: number, row: Item) {
       // console.log(index, row)
-      EventBus.$emit('editCreate', item.id)
+      EventBus.$emit('editCreate', row.id)
     },
-    handleDelete (index: number, item: Item) {
+    handleDelete (index: number, row: Item) {
       // console.log(index, row)
       this.$confirm('确定删除？').then(() => {
-        this.deleteResource(item.id)
+        this.deleteResource(row.id)
       }).catch(err => {
         console.log('已取消', err)
       })
@@ -141,23 +141,23 @@ export default Vue.extend({
     },
     onSubmit () {
       this.form.current = 1
-      this.loadResource()
+      this.loadAllResource()
     },
     resetForm (form: string) {
       (this.$refs[form] as Form).resetFields()
       this.form.current = 1
-      this.loadResource()
+      this.loadAllResource()
     },
     handleSizeChange (size: number) {
       // console.log(`每页 ${size} 条`)
       this.form.size = size
       this.form.current = 1
-      this.loadResource()
+      this.loadAllResource()
     },
     handleCurrentChange (current: number) {
       // console.log(`当前页: ${current}`)
       this.form.current = current
-      this.loadResource()
+      this.loadAllResource()
     }
   }
 })
