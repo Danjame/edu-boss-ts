@@ -100,13 +100,13 @@ export default Vue.extend({
       try {
         await (this.$refs.form as Form).validate()
         let params
-        if (this.form.id) {
-          // 编辑资源传id
-          params = this.form
-        } else {
+        if (!this.form.id) {
           // 添加资源不传id
           const { name, url, categoryId, description } = this.form
           params = { name, url, categoryId, description }
+        } else {
+          // 编辑资源传id
+          params = this.form
         }
         const { data } = await saveOrUpdateResource(params)
         switch (data.code) {

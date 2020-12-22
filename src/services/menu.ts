@@ -12,6 +12,11 @@ interface Menu{
   shown?: boolean | null
 }
 
+interface RoleMenus{
+  roleId?: number
+  menuIdList?: []
+}
+
 export const getAllMenus = () => {
   return request({
     method: 'GET',
@@ -41,5 +46,20 @@ export const deleteMenu = (id: number) => {
   return request({
     method: 'DELETE',
     url: `/boss/menu/${id}`
+  })
+}
+
+export const allocateRoleMenus = (data: RoleMenus) => {
+  return request({
+    method: 'POST',
+    url: '/boss/menu/allocateRoleMenus',
+    data
+  })
+}
+
+export const getMenuNodeList = () => {
+  return request({
+    method: 'GET',
+    url: '/boss/menu/getMenuNodeList'
   })
 }

@@ -1,6 +1,6 @@
 <template>
-  <div class="role-menu">
-    role-menu
+  <div class="alloc-resource">
+    alloc-resource
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'RoleMenu'
+  name: 'AllocResource'
 })
 </script>
 

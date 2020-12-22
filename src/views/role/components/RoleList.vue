@@ -26,11 +26,11 @@
               <el-button
               type="text"
               size="small"
-              @click="$router.push({name: 'role-menu' })">分配菜单</el-button>
+              @click="$router.push({name: 'alloc-menu', query: { roleId: scope.row.id } })">分配菜单</el-button>
               <el-button
               type="text"
               size="small"
-              @click="$router.push({name: 'role-resource' })">分配资源</el-button>
+              @click="$router.push({name: 'alloc-resource', query: { roleId: scope.row.id } })">分配资源</el-button>
             </div>
             <div>
               <el-button
@@ -57,8 +57,6 @@ import { Form } from 'element-ui'
 
 interface Item {
   id: number
-  code: string
-  description?: string
 }
 
 export default Vue.extend({
@@ -114,7 +112,7 @@ export default Vue.extend({
     },
     handleEdit (index: number, row: Item) {
       // console.log(index, row)
-      EventBus.$emit('editCreate', row)
+      EventBus.$emit('editCreate', row.id)
     },
     handleDelete (index: number, row: Item) {
       // console.log(index, row)

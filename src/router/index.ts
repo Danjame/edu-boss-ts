@@ -29,14 +29,14 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: 'role' */ '@/views/role/index.vue')
       },
       {
-        path: '/role/menu',
-        name: 'role-menu',
-        component: () => import(/* webpackChunkName: 'role-menu' */ '@/views/role/menu.vue')
+        path: '/role/alloc-menu',
+        name: 'alloc-menu',
+        component: () => import(/* webpackChunkName: 'alloc-menu' */ '@/views/role/alloc-menu.vue')
       },
       {
-        path: '/role/resource',
-        name: 'role-resource',
-        component: () => import(/* webpackChunkName: 'role-resource' */ '@/views/role/resource.vue')
+        path: '/role/alloc-resource',
+        name: 'alloc-resource',
+        component: () => import(/* webpackChunkName: 'alloc-resource' */ '@/views/role/alloc-resource.vue')
       },
       {
         path: '/menu',

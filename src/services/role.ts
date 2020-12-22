@@ -30,6 +30,13 @@ export const getRolePages = (data: RolePages) => {
   })
 }
 
+export const getRoleById = (id: number) => {
+  return request({
+    method: 'GET',
+    url: `/boss/role/${id}`
+  })
+}
+
 export const saveOrUpdateRole = (data: Role) => {
   return request({
     method: 'POST',

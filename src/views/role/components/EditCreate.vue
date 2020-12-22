@@ -23,16 +23,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { saveOrUpdateRole } from '@/services/role'
+import { getRoleById, saveOrUpdateRole } from '@/services/role'
 import { Form } from 'element-ui'
-
-interface Item {
-  id: number
-  code: string
-  name: string
-  // eslint-disable-next-line
-  description?: any
-}
 
 export default Vue.extend({
   name: 'EditCreate',
@@ -56,13 +48,10 @@ export default Vue.extend({
   },
   created () {
     // 打开关闭编辑添加组件
-    EventBus.$on('editCreate', (data: Item) => {
+    EventBus.$on('editCreate', (id: number) => {
       this.isVisible = true
-      if (data) {
-        this.$nextTick(() => {
-          const { id, code, name, description } = data
-          this.form = { id, code, name, description }
-        })
+      if (id) {
+        this.loadRoleById(id)
       }
     })
   },
@@ -70,7 +59,6 @@ export default Vue.extend({
     // 当关闭编辑添加组件，还原表单
     isVisible: function () {
       if (!this.isVisible) {
-        console.log(this.form);
         (this.$refs.form as Form).resetFields()
         this.form.id = 0
       }
@@ -80,17 +68,25 @@ export default Vue.extend({
     handleHide () {
       this.isVisible = false
     },
+    async loadRoleById (id: number) {
+      const { data } = await getRoleById(id)
+      if (data.code === '000000') {
+        this.form = data.data
+      } else {
+        this.$message.error(`加载失败：${data.mesg}`)
+      }
+    },
     async onSubmit () {
       try {
         await (this.$refs.form as Form).validate()
         let params
-        if (this.form.id) {
-          // 编辑资源传id
-          params = this.form
-        } else {
+        if (!this.form.id) {
           // 添加资源不传id
           const { code, name, description } = this.form
           params = { code, name, description }
+        } else {
+          // 编辑资源传id
+          params = this.form
         }
         const { data } = await saveOrUpdateRole(params)
         switch (data.code) {
