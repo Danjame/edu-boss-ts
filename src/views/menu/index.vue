@@ -34,6 +34,10 @@
 import Vue from 'vue'
 import { getAllMenus, deleteMenu } from '@/services/menu'
 
+interface Item {
+  id: number
+}
+
 export default Vue.extend({
   name: 'Menu',
   data () {
@@ -56,25 +60,31 @@ export default Vue.extend({
       }
       this.isLoading = false
     },
-    handleEdit (index: number, row: any) {
+    async deleteMenu (id: number) {
+      const { data } = await deleteMenu(id)
+      switch (data.code) {
+        case '000000':
+          // 删除后更新列表
+          this.loadAllMenus()
+          break
+        case '10000':
+          this.$message.error(`删除失败：${data.mesg}`)
+          break
+      }
+    },
+    handleEdit (index: number, item: Item) {
       // console.log(index, row)
       this.$router.push({
         name: 'menu-edit',
         query: {
-          id: row.id
+          id: String(item.id)
         }
       })
     },
-    handleDelete (index: number, row: any) {
+    handleDelete (index: number, item: Item) {
       this.$confirm('确认删除？')
-        .then(async () => {
-          const { data } = await deleteMenu(row.id)
-          if (data.code === '000000') {
-            this.$message.success('删除成功')
-            this.loadAllMenus()
-          } else {
-            this.$message.error(`删除失败，${data.mesg}`)
-          }
+        .then(() => {
+          this.deleteMenu(item.id)
         }).catch(err => {
           console.log('取消', err)
         })

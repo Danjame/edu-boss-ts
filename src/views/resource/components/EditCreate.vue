@@ -39,7 +39,7 @@ export default Vue.extend({
         id: 0,
         name: '',
         url: '',
-        categoryId: '',
+        categoryId: null,
         description: ''
       },
       rules: {

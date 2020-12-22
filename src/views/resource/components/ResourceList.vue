@@ -63,6 +63,10 @@ import EventBus from '@/eventbus/eventbus'
 import { getAllGategories, getResourcePages, deleteResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
+interface Item {
+  id: number
+}
+
 export default Vue.extend({
   name: 'Resource',
   data () {
@@ -116,15 +120,15 @@ export default Vue.extend({
           this.loadResource()
           break
         case '10000':
-          this.$message.error(`提交失败：${data.mesg}`)
+          this.$message.error(`删除失败：${data.mesg}`)
           break
       }
     },
-    handleEdit (index: number, item: any) {
+    handleEdit (index: number, item: Item) {
       // console.log(index, row)
       EventBus.$emit('editCreate', item.id)
     },
-    handleDelete (index: number, item: any) {
+    handleDelete (index: number, item: Item) {
       // console.log(index, row)
       this.$confirm('确定删除？').then(() => {
         this.deleteResource(item.id)

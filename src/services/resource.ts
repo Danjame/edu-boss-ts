@@ -1,5 +1,28 @@
 import request from '@/utils/request'
 
+interface ResourcePages{
+  id?: number
+  name?: string
+  url?: string
+  categoryId?: number | null
+  current?: number
+  size?: number
+}
+
+interface ResourceItem{
+  id?: number
+  name: string
+  categoryId: number | null
+  url: string
+  description?: string
+}
+
+interface Category{
+  id?: number
+  name?: string
+  sort?: number | null
+}
+
 export const getAllRource = () => {
   return request({
     method: 'GET',
@@ -7,17 +30,14 @@ export const getAllRource = () => {
   })
 }
 
-export const getAllGategories = (id: any) => {
+export const getAllGategories = () => {
   return request({
     method: 'GET',
-    url: '/boss/resource/category/getAll',
-    params: {
-      resourceId: id
-    }
+    url: '/boss/resource/category/getAll'
   })
 }
 
-export const getResourcePages = (data: object) => {
+export const getResourcePages = (data: ResourcePages) => {
   return request({
     method: 'POST',
     url: '/boss/resource/getResourcePages',
@@ -25,14 +45,14 @@ export const getResourcePages = (data: object) => {
   })
 }
 
-export const getEditResourceInfo = (id: any = -1) => {
+export const getEditResourceInfo = (id: number) => {
   return request({
     method: 'GET',
     url: `/boss/resource/${id}`
   })
 }
 
-export const saveOrUpdateResource = (data: object) => {
+export const saveOrUpdateResource = (data: ResourceItem) => {
   return request({
     method: 'POST',
     url: '/boss/resource/saveOrUpdate',
@@ -47,12 +67,17 @@ export const deleteResource = (id: number) => {
   })
 }
 
-export const saveOrUpdateCategories = (id: number) => {
+export const saveOrUpdateCategory = (data: Category) => {
   return request({
     method: 'POST',
     url: '/boss/resource/category/saveOrderUpdate',
-    params: {
-      id
-    }
+    data
+  })
+}
+
+export const deleteCategory = (id: number) => {
+  return request({
+    method: 'DELETE',
+    url: `/boss/resource/category/${id}`
   })
 }

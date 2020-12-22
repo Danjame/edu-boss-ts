@@ -72,13 +72,13 @@ export default Vue.extend({
         description: '',
         icon: '',
         shown: false,
-        orderNum: null
+        orderNum: 1
       },
       rules: {
         name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
-        href: [{ required: false, message: '请输入菜单路径', trigger: 'blur' }],
+        href: [{ required: true, message: '请输入菜单路径', trigger: 'blur' }],
         parentId: [{ required: false, message: '请选择上级菜单', trigger: 'blur' }],
-        description: [{ required: true, message: '请选择上级菜单', trigger: 'blur' }],
+        description: [{ required: false, message: '请选择上级菜单', trigger: 'blur' }],
         icon: [{ required: true, message: '请选择上级菜单', trigger: 'blur' }],
         shown: [{ required: false, message: '请选择上级菜单', trigger: 'blur' }],
         orderNum: [{ required: false, message: '请选择排序号码', trigger: 'blur' }]
@@ -91,7 +91,7 @@ export default Vue.extend({
   },
   methods: {
     async loadEditMenuInfo () {
-      const { data } = this.$route.query.id ? await getEditMenuInfo(this.$route.query.id) : await getEditMenuInfo()
+      const { data } = await getEditMenuInfo(this.$route.query.id || -1)
       if (data.code === '000000') {
         this.parentMenuList = data.data.parentMenuList
       }

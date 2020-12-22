@@ -28,13 +28,13 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible" width="30%">
+    <el-dialog :title="form.id ? '编辑分类':'添加分类'" :visible.sync="isVisible" width="30%">
       <el-form :model="form" :rules="rules" ref="form">
         <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="排序" prop="sort" :label-width="formLabelWidth">
-          <el-input v-model="form.sort"></el-input>
+          <el-input v-model.number="form.sort"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -47,8 +47,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAllGategories, saveOrUpdateCategories } from '@/services/resource'
+import { getAllGategories, saveOrUpdateCategory, deleteCategory } from '@/services/resource'
 import { Form } from 'element-ui'
+
+interface Item {
+  id: number
+}
 
 export default Vue.extend({
   name: 'Category',
@@ -58,11 +62,14 @@ export default Vue.extend({
       form: {
         id: 0,
         name: '',
-        sort: ''
+        sort: null
       },
       rules: {
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-        sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
+        sort: [
+          { required: true, message: '请输入排序', trigger: 'blur' },
+          { type: 'number', message: '排序必须为数字' }
+        ]
       },
       isVisible: false,
       formLabelWidth: '120px'
@@ -70,6 +77,15 @@ export default Vue.extend({
   },
   created () {
     this.loadAllGategories()
+  },
+  watch: {
+    // 当关闭编辑添加组件，还原表单
+    isVisible: function () {
+      if (!this.isVisible) {
+        (this.$refs.form as Form).resetFields()
+        this.form.id = 0
+      }
+    }
   },
   methods: {
     async loadAllGategories () {
@@ -80,28 +96,37 @@ export default Vue.extend({
         this.$message.error(`加载失败：${data.mesg}`)
       }
     },
+    async deleteCategory (id: number) {
+      const { data } = await deleteCategory(id)
+      switch (data.code) {
+        case '000000':
+          // 删除后更新列表
+          this.loadAllGategories()
+          break
+        case '10000':
+          this.$message.error(`删除失败：${data.mesg}`)
+          break
+      }
+    },
     handleCreate () {
       this.isVisible = true
     },
-    async handleEdit (index: number, row: any) {
+    handleEdit (index: number, row: Item) {
       // console.log(index, row)
       this.isVisible = true
-      const { data } = await getAllGategories(row.id)
-      console.log(data)
+      const arr = this.tableData.filter((item: Item) => item.id === row.id)
+      const { id, name, sort } = arr[0]
+      this.$nextTick(() => {
+        this.form = { id, name, sort }
+      })
     },
-    handleDelete (index: number, row: any) {
-      // this.$confirm('确认删除？')
-      // .then(async () => {
-      //   const { data } = await deleteMenu(row.id)
-      //   if (data.code === '000000') {
-      //     this.$message.success('删除成功')
-      //     this.loadAll()
-      //   } else {
-      //     this.$message.error(`删除失败：${data.mesg}`)
-      //   }
-      // }).catch(err => {
-      //   console.log('取消', err)
-      // })
+    handleDelete (index: number, row: Item) {
+      this.$confirm('确认删除？')
+        .then(() => {
+          this.deleteCategory(row.id)
+        }).catch(err => {
+          console.log('取消', err)
+        })
     },
     handleHide () {
       this.isVisible = false
@@ -109,28 +134,28 @@ export default Vue.extend({
     async onSubmit () {
       try {
         await (this.$refs.form as Form).validate()
-      //   let params
-      //   if (this.form.id) {
-      //     // 编辑资源传id
-      //     params = this.form
-      //   } else {
-      //     // 添加资源不传id
-      //     const { name, url, categoryId, description } = this.form
-      //     params = { name, url, categoryId, description }
-      //   }
-      //   const { data } = await saveOrUpdate(params)
-      //   switch (data.code) {
-      //     case '000000':
-      //       // 编辑更新完毕刷新列表
-      //       EventBus.$emit('updateList')
-      //       this.handleHide()
-      //       break
-      //     case '10000':
-      //       this.$message.error(`提交失败：${data.mesg}`)
-      //       break
-      //   }
+        let params
+        if (this.form.id) {
+          // 编辑资源传id
+          params = this.form
+        } else {
+          // 添加资源不传id
+          const { name, sort } = this.form
+          params = { name, sort }
+        }
+        console.log(params)
+        const { data } = await saveOrUpdateCategory(params)
+        switch (data.code) {
+          case '000000':
+            // 编辑更新完毕刷新列表
+            this.loadAllGategories()
+            this.handleHide()
+            break
+          case '10000':
+            this.$message.error(`提交失败：${data.mesg}`)
+            break
+        }
       } catch (err) {
-        console.log(err)
         this.$message.error(`提交失败：${err}`)
       }
     }
