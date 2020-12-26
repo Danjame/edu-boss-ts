@@ -10,11 +10,13 @@
         node-key="id"
         :props="defaultProps"
         default-expand-all
+        :default-checked-keys="checkedKeys"
+        ref="el-tree"
       >
       </el-tree>
       <div class="alloc-menu-btns">
-        <el-button>清空</el-button>
-        <el-button type="primary">保存</el-button>
+        <el-button @click="resetChecked">清空</el-button>
+        <el-button type="primary" @click="onSave">保存</el-button>
       </div>
     </el-card>
   </div>
@@ -22,7 +24,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getMenuNodeList, allocateRoleMenus } from '@/services/menu'
+import { getMenuNodeList, getRoleMenus, allocateRoleMenus } from '@/services/menu'
+import { Tree } from 'element-ui'
 
 export default Vue.extend({
   name: 'AllocMenu',
@@ -32,21 +35,57 @@ export default Vue.extend({
       defaultProps: {
         children: 'subMenuList',
         label: 'name'
-      }
+      },
+      roleId: Number(this.$route.query.roleId),
+      checkedKeys: []
     }
   },
   created () {
     this.loadMenuNodeList()
+    this.loadRoleMenus()
   },
   methods: {
     async loadMenuNodeList () {
       const { data } = await getMenuNodeList()
-      console.log(data)
       if (data.code === '000000') {
         this.menus = data.data
       } else {
         this.$message.error(`加载失败：${data.mesg}`)
       }
+    },
+    async loadRoleMenus () {
+      const { data } = await getRoleMenus(this.roleId)
+      if (data.code === '000000') {
+        this.getCheckedKeys(data.data)
+      } else {
+        this.$message.error(`加载失败：${data.mesg}`)
+      }
+    },
+    // 收集选中项的key
+    getCheckedKeys (menus: any) {
+      menus.forEach((menu: any) => {
+        if (menu.selected) {
+          this.checkedKeys = [...this.checkedKeys, menu.id] as any
+        }
+        if (menu.subMenuList) {
+          this.getCheckedKeys(menu.subMenuList)
+        }
+      })
+    },
+    async onSave () {
+      const menuIdList = (this.$refs['el-tree'] as Tree).getCheckedKeys()
+      const { data } = await allocateRoleMenus({
+        roleId: this.roleId,
+        menuIdList
+      })
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
+    },
+    resetChecked () {
+      (this.$refs['el-tree'] as Tree).setCheckedKeys([])
     }
   }
 })

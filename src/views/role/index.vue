@@ -11,7 +11,7 @@ import RoleList from './components/RoleList.vue'
 import EditCreate from './components/EditCreate.vue'
 
 export default Vue.extend({
-  name: 'Resource',
+  name: 'Role',
   components: {
     RoleList,
     EditCreate
