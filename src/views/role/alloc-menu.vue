@@ -31,12 +31,12 @@ export default Vue.extend({
   name: 'AllocMenu',
   data () {
     return {
+      roleId: Number(this.$route.query.roleId),
       menus: [],
       defaultProps: {
         children: 'subMenuList',
         label: 'name'
       },
-      roleId: Number(this.$route.query.roleId),
       checkedKeys: []
     }
   },
