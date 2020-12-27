@@ -60,7 +60,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllGategories, getResourcePages, deleteResource } from '@/services/resource'
+import { getAllCategories, getResourcePages, deleteResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
 interface Item {
@@ -90,7 +90,7 @@ export default Vue.extend({
       this.loadAllResource()
     })
     this.loadAllResource()
-    this.loadAllGategory()
+    this.loadAllCategory()
   },
   methods: {
     async loadAllResource () {
@@ -100,16 +100,16 @@ export default Vue.extend({
         this.resource = data.data.records
         this.total = data.data.total
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`资源加载失败：${data.mesg}`)
       }
       this.isLoading = false
     },
-    async loadAllGategory () {
-      const { data } = await getAllGategories()
+    async loadAllCategory () {
+      const { data } = await getAllCategories()
       if (data.code === '000000') {
         this.category = data.data
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`分类加载失败：${data.mesg}`)
       }
     },
     async deleteResource (id: number) {

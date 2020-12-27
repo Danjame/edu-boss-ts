@@ -28,7 +28,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllGategories, getEditResourceInfo, saveOrUpdateResource } from '@/services/resource'
+import { getAllCategories, getEditResourceInfo, saveOrUpdateResource } from '@/services/resource'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
@@ -55,7 +55,7 @@ export default Vue.extend({
     }
   },
   created () {
-    this.loadAllGategory()
+    this.loadAllCategory()
     // 打开关闭编辑添加组件
     EventBus.$on('editCreate', (data: number) => {
       if (data) {
@@ -75,8 +75,8 @@ export default Vue.extend({
     }
   },
   methods: {
-    async loadAllGategory () {
-      const { data } = await getAllGategories()
+    async loadAllCategory () {
+      const { data } = await getAllCategories()
       if (data.code === '000000') {
         this.category = data.data
       }
@@ -89,7 +89,7 @@ export default Vue.extend({
             this.form = data.data
           }
         } catch (err) {
-          this.$message.error(`请求失败${err}`)
+          this.$message.error(`加载失败：${err}`)
         }
       }
     },

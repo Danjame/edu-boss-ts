@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAllGategories, saveOrUpdateCategory, deleteCategory } from '@/services/resource'
+import { getAllCategories, saveOrUpdateCategory, deleteCategory } from '@/services/resource'
 import { Form } from 'element-ui'
 
 interface Item {
@@ -76,7 +76,7 @@ export default Vue.extend({
     }
   },
   created () {
-    this.loadAllGategories()
+    this.loadAllCategories()
   },
   watch: {
     // 当关闭编辑添加组件，还原表单
@@ -88,8 +88,8 @@ export default Vue.extend({
     }
   },
   methods: {
-    async loadAllGategories () {
-      const { data } = await getAllGategories()
+    async loadAllCategories () {
+      const { data } = await getAllCategories()
       if (data.code === '000000') {
         this.tableData = data.data
       } else {
@@ -101,7 +101,7 @@ export default Vue.extend({
       switch (data.code) {
         case '000000':
           // 删除后更新列表
-          this.loadAllGategories()
+          this.loadAllCategories()
           break
         case '10000':
           this.$message.error(`删除失败：${data.mesg}`)
@@ -149,7 +149,7 @@ export default Vue.extend({
         switch (data.code) {
           case '000000':
             // 编辑更新完毕刷新列表
-            this.loadAllGategories()
+            this.loadAllCategories()
             this.handleHide()
             break
           case '10000':

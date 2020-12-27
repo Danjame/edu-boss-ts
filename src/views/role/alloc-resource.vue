@@ -1,24 +1,22 @@
 <template>
   <div class="alloc-resource">
     <el-card class="box-card">
-      <div>
-        <el-row style="background: rgb(242, 246, 252);">
-          <el-checkbox
-            :indeterminate="isIndeterminate"
-            v-model="checkAll"
-            @change="handleCheckAllChange"
-          >
-          全选
-          </el-checkbox>
-        </el-row>
-        <el-row>
-          <!-- <div style="margin: 15px 0;"></div> -->
-            <el-col :span="8" v-for="city in cities" :key="city">
-              <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-            <el-checkbox :label="city" >{{city}}</el-checkbox>
-            </el-checkbox-group>
-            </el-col>
-        </el-row>
+      <div slot="header">
+        <span>分配资源</span>
+      </div>
+      <el-tree
+        :data="resource"
+        show-checkbox
+        node-key="id"
+        :props="defaultProps"
+        default-expand-all
+        :default-checked-keys="checkedKeys"
+        ref="el-tree"
+      >
+      </el-tree>
+      <div class="alloc-menu-btns">
+        <el-button @click="resetChecked">清空</el-button>
+        <el-button type="primary" @click="onSave">保存</el-button>
       </div>
     </el-card>
   </div>
@@ -26,49 +24,75 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getRoleResources, allocateRoleResources } from '@/services/resource'
+import { getAllRource, getAllCategories, getRoleResources, allocateRoleResources } from '@/services/resource'
+import { Tree } from 'element-ui'
 
 export default Vue.extend({
   name: 'AllocResource',
   data () {
     return {
       roleId: Number(this.$route.query.roleId),
-      checkAll: false,
-      checkedCities: ['上海', '北京'],
-      cities: ['上海', '北京', '广州', '深圳'],
-      isIndeterminate: true
+      resource: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      checkedKeys: []
     }
   },
   created () {
-    // this.loadMenuNodeList()
+    this.loadAllReourceAndCategories()
     this.loadRoleResources()
   },
   methods: {
-    // async loadMenuNodeList () {
-    //   const { data } = await getMenuNodeList()
-    //   if (data.code === '000000') {
-    //     this.menus = data.data
-    //   } else {
-    //     this.$message.error(`加载失败：${data.mesg}`)
-    //   }
-    // },
+    async loadAllReourceAndCategories () {
+      const ret = await Promise.all([getAllRource(), getAllCategories()])
+      const resource = ret[0].data.data
+      const categories = ret[1].data.data
+      resource.forEach((r: any) => {
+        const category = categories.find((c: any) => c.id === r.categoryId)
+        if (category) {
+          category.children = category.children || []
+          category.children.push(r)
+        }
+      })
+      categories.forEach((c: any) => {
+        c.id = Math.random()
+      })
+      this.resource = categories
+    },
     async loadRoleResources () {
       const { data } = await getRoleResources(this.roleId)
       if (data.code === '000000') {
-        // this.getCheckedKeys(data.data)
-        console.log(data.data)
+        this.getCheckedKeys(data.data)
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`角色资源加载失败：${data.mesg}`)
       }
     },
-    handleCheckAllChange (val: any) {
-      this.checkedCities = val ? this.cities : []
-      this.isIndeterminate = false
+    getCheckedKeys (resource: any) {
+      resource.forEach((r: any) => {
+        if (r.selected) {
+          this.checkedKeys = [...this.checkedKeys, r.id] as any
+        }
+        if (r.resourceList) {
+          this.getCheckedKeys(r.resourceList)
+        }
+      })
     },
-    handleCheckedCitiesChange (value: any) {
-      const checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    resetChecked () {
+      (this.$refs['el-tree'] as Tree).setCheckedKeys([])
+    },
+    async onSave () {
+      const resourceIdList = (this.$refs['el-tree'] as Tree).getCheckedKeys()
+      const { data } = await allocateRoleResources({
+        roleId: this.roleId,
+        resourceIdList
+      })
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
     }
   }
 })

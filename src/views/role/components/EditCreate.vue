@@ -73,7 +73,7 @@ export default Vue.extend({
       if (data.code === '000000') {
         this.form = data.data
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`角色id加载失败：${data.mesg}`)
       }
     },
     async onSubmit () {

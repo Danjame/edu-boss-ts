@@ -50,7 +50,7 @@ export default Vue.extend({
       if (data.code === '000000') {
         this.menus = data.data
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`菜单节点加载失败：${data.mesg}`)
       }
     },
     async loadRoleMenus () {
@@ -58,19 +58,22 @@ export default Vue.extend({
       if (data.code === '000000') {
         this.getCheckedKeys(data.data)
       } else {
-        this.$message.error(`加载失败：${data.mesg}`)
+        this.$message.error(`角色菜单加载失败：${data.mesg}`)
       }
     },
     // 收集选中项的key
     getCheckedKeys (menus: any) {
-      menus.forEach((menu: any) => {
-        if (menu.selected) {
-          this.checkedKeys = [...this.checkedKeys, menu.id] as any
+      menus.forEach((m: any) => {
+        if (m.selected) {
+          this.checkedKeys = [...this.checkedKeys, m.id] as any
         }
-        if (menu.subMenuList) {
-          this.getCheckedKeys(menu.subMenuList)
+        if (m.subMenuList) {
+          this.getCheckedKeys(m.subMenuList)
         }
       })
+    },
+    resetChecked () {
+      (this.$refs['el-tree'] as Tree).setCheckedKeys([])
     },
     async onSave () {
       const menuIdList = (this.$refs['el-tree'] as Tree).getCheckedKeys()
@@ -83,9 +86,6 @@ export default Vue.extend({
       } else {
         this.$message.error(`保存失败：${data.mesg}`)
       }
-    },
-    resetChecked () {
-      (this.$refs['el-tree'] as Tree).setCheckedKeys([])
     }
   }
 })

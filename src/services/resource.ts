@@ -30,7 +30,7 @@ export const getAllRource = () => {
   })
 }
 
-export const getAllGategories = () => {
+export const getAllCategories = () => {
   return request({
     method: 'GET',
     url: '/boss/resource/category/getAll'
