@@ -27,6 +27,17 @@ import Vue from 'vue'
 import { getAllRource, getAllCategories, getRoleResources, allocateRoleResources } from '@/services/resource'
 import { Tree } from 'element-ui'
 
+interface Resource{
+  id: number
+  categoryId: number
+  selected: boolean
+  resourceList?: []
+}
+
+interface Category{
+  id: number
+}
+
 export default Vue.extend({
   name: 'AllocResource',
   data () {
@@ -49,14 +60,14 @@ export default Vue.extend({
       const ret = await Promise.all([getAllRource(), getAllCategories()])
       const resource = ret[0].data.data
       const categories = ret[1].data.data
-      resource.forEach((r: any) => {
-        const category = categories.find((c: any) => c.id === r.categoryId)
+      resource.forEach((r: Resource) => {
+        const category = categories.find((c: Category) => c.id === r.categoryId)
         if (category) {
           category.children = category.children || []
           category.children.push(r)
         }
       })
-      categories.forEach((c: any) => {
+      categories.forEach((c: Category) => {
         c.id = Math.random()
       })
       this.resource = categories
@@ -69,10 +80,10 @@ export default Vue.extend({
         this.$message.error(`角色资源加载失败：${data.mesg}`)
       }
     },
-    getCheckedKeys (resource: any) {
-      resource.forEach((r: any) => {
+    getCheckedKeys (resource: []) {
+      resource.forEach((r: Resource) => {
         if (r.selected) {
-          this.checkedKeys = [...this.checkedKeys, r.id] as any
+          this.checkedKeys = [...this.checkedKeys, r.id] as []
         }
         if (r.resourceList) {
           this.getCheckedKeys(r.resourceList)

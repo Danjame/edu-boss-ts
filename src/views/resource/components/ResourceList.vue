@@ -80,7 +80,7 @@ export default Vue.extend({
       },
       total: 0,
       resource: [],
-      category: [],
+      categories: [],
       isLoading: false
     }
   },
@@ -107,7 +107,7 @@ export default Vue.extend({
     async loadAllCategory () {
       const { data } = await getAllCategories()
       if (data.code === '000000') {
-        this.category = data.data
+        this.categories = data.data
       } else {
         this.$message.error(`分类加载失败：${data.mesg}`)
       }

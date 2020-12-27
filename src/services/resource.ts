@@ -23,6 +23,11 @@ interface Category{
   sort?: number | null
 }
 
+interface AllocResources{
+  roleId: number
+  resourceIdList: number[]
+}
+
 export const getAllRource = () => {
   return request({
     method: 'GET',
@@ -92,7 +97,7 @@ export const getRoleResources = (id: number) => {
   })
 }
 
-export const allocateRoleResources = (data: any) => {
+export const allocateRoleResources = (data: AllocResources) => {
   return request({
     method: 'POST',
     url: '/boss/resource/allocateRoleResources',

@@ -27,6 +27,12 @@ import Vue from 'vue'
 import { getMenuNodeList, getRoleMenus, allocateRoleMenus } from '@/services/menu'
 import { Tree } from 'element-ui'
 
+interface Menu{
+  id: number
+  selected: boolean
+  subMenuList: []
+}
+
 export default Vue.extend({
   name: 'AllocMenu',
   data () {
@@ -62,10 +68,10 @@ export default Vue.extend({
       }
     },
     // 收集选中项的key
-    getCheckedKeys (menus: any) {
-      menus.forEach((m: any) => {
+    getCheckedKeys (menus: []) {
+      menus.forEach((m: Menu) => {
         if (m.selected) {
-          this.checkedKeys = [...this.checkedKeys, m.id] as any
+          this.checkedKeys = [...this.checkedKeys, m.id] as []
         }
         if (m.subMenuList) {
           this.getCheckedKeys(m.subMenuList)

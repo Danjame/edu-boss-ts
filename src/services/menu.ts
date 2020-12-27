@@ -12,10 +12,10 @@ interface Menu{
   shown?: boolean | null
 }
 
-// interface RoleMenus{
-//   roleId?: number
-//   menuIdList?: []
-// }
+interface AllocMenus{
+  roleId: number
+  menuIdList: number[]
+}
 
 export const getAllMenus = () => {
   return request({
@@ -66,7 +66,7 @@ export const getRoleMenus = (roleId: number) => {
   })
 }
 
-export const allocateRoleMenus = (data: any) => {
+export const allocateRoleMenus = (data: AllocMenus) => {
   return request({
     method: 'POST',
     url: '/boss/menu/allocateRoleMenus',

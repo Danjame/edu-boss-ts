@@ -6,6 +6,15 @@ interface User{
   password: string
 }
 
+interface UserPages{
+  phone?: string
+  userId?: number | null
+  startCreateTime?: string
+  endCreateTime?: string
+  currentPage: number
+  pageSize: number
+}
+
 export const login = (data: User) => {
   return request({
     method: 'POST',
@@ -19,5 +28,13 @@ export const getUserInfo = () => {
   return request({
     method: 'GET',
     url: '/front/user/getInfo'
+  })
+}
+
+export const getUserPages = (data: UserPages) => {
+  return request({
+    method: 'POST',
+    url: '/boss/user/getUserPages',
+    data
   })
 }
