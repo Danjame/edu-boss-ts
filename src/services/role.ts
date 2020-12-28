@@ -15,6 +15,11 @@ interface RolePages{
   size: number
 }
 
+interface UserRoles{
+  userId: number
+  roleIdList: never[]
+}
+
 export const getAllRoles = () => {
   return request({
     method: 'GET',
@@ -30,10 +35,10 @@ export const getRolePages = (data: RolePages) => {
   })
 }
 
-export const getRoleById = (id: number) => {
+export const getRoleById = (roleId: number) => {
   return request({
     method: 'GET',
-    url: `/boss/role/${id}`
+    url: `/boss/role/${roleId}`
   })
 }
 
@@ -45,9 +50,24 @@ export const saveOrUpdateRole = (data: Role) => {
   })
 }
 
-export const deleteRole = (id: number) => {
+export const deleteRole = (roleId: number) => {
   return request({
     method: 'DELETE',
-    url: `/boss/role/${id}`
+    url: `/boss/role/${roleId}`
+  })
+}
+
+export const getUserRoles = (userId: number) => {
+  return request({
+    method: 'GET',
+    url: `/boss/role/user/${userId}`
+  })
+}
+
+export const allocateUserRoles = (data: UserRoles) => {
+  return request({
+    method: 'POST',
+    url: '/boss/role/allocateUserRoles',
+    data
   })
 }

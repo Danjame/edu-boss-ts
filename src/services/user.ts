@@ -38,3 +38,23 @@ export const getUserPages = (data: UserPages) => {
     data
   })
 }
+
+export const enableUser = (userId: number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/user/enableUser',
+    params: {
+      userId
+    }
+  })
+}
+
+export const forbidUser = (userId: number) => {
+  return request({
+    method: 'POST',
+    url: '/boss/user/forbidUser',
+    data: {
+      userId
+    }
+  })
+}

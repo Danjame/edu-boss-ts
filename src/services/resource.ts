@@ -50,10 +50,10 @@ export const getResourcePages = (data: ResourcePages) => {
   })
 }
 
-export const getEditResourceInfo = (id: number) => {
+export const getEditResourceInfo = (resourceId: number) => {
   return request({
     method: 'GET',
-    url: `/boss/resource/${id}`
+    url: `/boss/resource/${resourceId}`
   })
 }
 
@@ -65,10 +65,10 @@ export const saveOrUpdateResource = (data: ResourceItem) => {
   })
 }
 
-export const deleteResource = (id: number) => {
+export const deleteResource = (resourceId: number) => {
   return request({
     method: 'DELETE',
-    url: `/boss/resource/${id}`
+    url: `/boss/resource/${resourceId}`
   })
 }
 
@@ -80,19 +80,19 @@ export const saveOrUpdateCategory = (data: Category) => {
   })
 }
 
-export const deleteCategory = (id: number) => {
+export const deleteCategory = (categoryId: number) => {
   return request({
     method: 'DELETE',
-    url: `/boss/resource/category/${id}`
+    url: `/boss/resource/category/${categoryId}`
   })
 }
 
-export const getRoleResources = (id: number) => {
+export const getRoleResources = (roleId: number) => {
   return request({
     method: 'GET',
     url: '/boss/resource/getRoleResources',
     params: {
-      roleId: id
+      roleId
     }
   })
 }

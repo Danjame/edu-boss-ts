@@ -3,9 +3,13 @@
     <el-dialog title="分配角色" :visible.sync="isVisible">
       <el-form :model="form">
         <el-form-item label="活动区域" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="form.roleIdList" multiple placeholder="请选择">
+            <el-option
+              v-for="role in roles"
+              :key="role.id"
+              :label="role.name"
+              :value="role.id">
+            </el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -20,28 +24,82 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
+import { getAllRoles, getUserRoles, allocateUserRoles } from '@/services/role'
+import { enableUser } from '@/services/user'
+
+interface Role{
+  id: number
+}
 
 export default Vue.extend({
   name: 'AllocRole',
   data () {
     return {
       form: {
-        region: ''
+        userId: 0,
+        roleIdList: []
       },
+      roles: [],
       isVisible: false,
       formLabelWidth: '120px'
     }
   },
+  watch: {
+    // 当关闭编辑添加组件，还原表单
+    isVisible: function () {
+      if (!this.isVisible) {
+        this.form = {
+          userId: 0,
+          roleIdList: []
+        }
+      }
+    }
+  },
   created () {
-    EventBus.$on('allocateRole', () => {
+    EventBus.$on('allocateRole', (userId: number) => {
+      // 获取用户ID
+      this.form.userId = userId
+      // 获取用户的角色
+      this.loadUserRoles()
       this.isVisible = true
     })
+    this.loadAllRoles()
   },
   methods: {
+    async loadAllRoles () {
+      const { data } = await getAllRoles()
+      if (data.code === '000000') {
+        this.roles = data.data
+      } else {
+        this.$message.error(`角色信息加载失败：${data.mesg}`)
+      }
+    },
+    async loadUserRoles () {
+      const { data } = await getUserRoles(this.form.userId)
+      if (data.code === '000000') {
+        this.form.roleIdList = data.data.map((role: Role) => role.id)
+      } else {
+        this.$message.error(`分配失败：${data.mesg}`)
+      }
+    },
+    async allocateUserRoles () {
+      const { data } = await allocateUserRoles(this.form)
+      if (data.code === '000000') {
+        // if (this.form.roleIdList.length) {
+        //   const { data } = await enableUser(this.form.userId)
+        // }
+        this.$message.success('分配成功')
+        // 分配成功后重新加载列表
+        this.loadAllRoles()
+      } else {
+        this.$message.error(`分配失败：${data.mesg}`)
+      }
+    },
     handleHide () {
       this.isVisible = false
     },
     onSubmit () {
+      this.allocateUserRoles()
       this.handleHide()
     }
   }

@@ -49,7 +49,7 @@
               v-if="scope.row.status==='ENABLE'"
               size="mini"
               type="text"
-              @click="handleBan(scope.$index, scope.row)">禁用</el-button>
+              @click="handleForbid(scope.$index, scope.row)">禁用</el-button>
             <el-button
               size="mini"
               type="text"
@@ -75,8 +75,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getUserPages } from '@/services/user'
+import { getUserPages, forbidUser } from '@/services/user'
 import { DatePicker, Form } from 'element-ui'
+
+interface Item {
+  id: number
+}
 
 export default Vue.extend({
   name: 'UserList',
@@ -147,37 +151,23 @@ export default Vue.extend({
         this.users = data.data.records
         this.total = data.data.total
       } else {
-        this.$message.error(`资源加载失败：${data.mesg}`)
+        this.$message.error(`用户信息加载失败：${data.mesg}`)
       }
       this.isLoading = false
     },
-    // async loadAllCategory () {
-    //   const { data } = await getAllCategories()
-    //   if (data.code === '000000') {
-    //     this.category = data.data
-    //   } else {
-    //     this.$message.error(`分类加载失败：${data.mesg}`)
-    //   }
-    // },
-    // async deleteResource (id: number) {
-    //   const { data } = await deleteResource(id)
-    //   switch (data.code) {
-    //     case '000000':
-    //       // 删除后更新列表
-    //       this.loadAllResource()
-    //       break
-    //     case '10000':
-    //       this.$message.error(`删除失败：${data.mesg}`)
-    //       break
-    //   }
-    // },
-    handleBan (index: number, row: any) {
+    async handleForbid (index: number, row: Item) {
       // console.log(index, row)
-      // EventBus.$emit('editCreate', row.id)
+      const { data } = await forbidUser(row.id)
+      if (data.code === '000000') {
+        this.$message.success('禁用成功')
+        // 禁用之后重新加载列表
+        this.loadUserPages()
+      } else {
+        this.$message.error(`禁用失败：${data.mesg}`)
+      }
     },
-    handleAllocate (index: number, row: any) {
+    handleAllocate (index: number, row: Item) {
       // console.log(index, row)
-      console.log('allocateRole')
       EventBus.$emit('allocateRole', row.id)
     },
     onSubmit () {
@@ -213,12 +203,4 @@ export default Vue.extend({
   vertical-align: middle;
   border-radius: 50%;
 }
-
-// .status-success {
-//     background: #51cf66;
-// }
-
-// .status-danger {
-//     background: #ff6b6b;
-// }
 </style>

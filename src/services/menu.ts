@@ -32,20 +32,20 @@ export const saveOrUpdateMenu = (data: Menu) => {
   })
 }
 
-export const getEditMenuInfo = (id: string | (string | null)[] | -1) => {
+export const getEditMenuInfo = (menuId: string | (string | null)[] | -1) => {
   return request({
     method: 'GET',
     url: '/boss/menu/getEditMenuInfo',
     params: {
-      id
+      menuId
     }
   })
 }
 
-export const deleteMenu = (id: number) => {
+export const deleteMenu = (menuId: number) => {
   return request({
     method: 'DELETE',
-    url: `/boss/menu/${id}`
+    url: `/boss/menu/${menuId}`
   })
 }
 
