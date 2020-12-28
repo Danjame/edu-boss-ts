@@ -1,23 +1,21 @@
 <template>
   <div class="course-list">
-
       <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
           <el-form-item label="课程名称" prop="courseName">
             <el-input v-model="form.courseName" placeholder="课程名称"></el-input>
           </el-form-item>
            <el-form-item label="状态" prop="status">
             <el-select v-model="form.status" placeholder="全部">
-              <el-option label="全部"></el-option>
-              <el-option label="上架" value="true"></el-option>
-              <el-option label="下架" value="false"></el-option>
+              <el-option label="全部" :value="null"></el-option>
+              <el-option label="上架" :value="1"></el-option>
+              <el-option label="下架" :value="0"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button :disabled="isLoading">查询</el-button>
+            <el-button @click="onSubmit" :disabled="isLoading">查询</el-button>
             <el-button type="primary">新建课程</el-button>
           </el-form-item>
         </el-form>
-
       <el-card class="box-card">
       <el-table :data="courses" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
         <el-table-column prop="id" label="ID" width="100" align="center" />
@@ -29,7 +27,11 @@
             <el-switch
               v-model="scope.row.status"
               active-color="#13ce66"
-              inactive-color="#ff4949">
+              inactive-color="#ff4949"
+              :active-value="1"
+              :inactive-value="0"
+              @change="onStateChange(scope.row)"
+            >
             </el-switch>
           </template>
         </el-table-column>
@@ -61,7 +63,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getCourses } from '@/services/course'
+import { getCourses, changeState } from '@/services/course'
+
+interface Course{
+  id: number
+  status: number
+}
 
 export default Vue.extend({
   name: 'CourseList',
@@ -69,7 +76,7 @@ export default Vue.extend({
     return {
       form: {
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 20,
         courseName: '',
         status: null
       },
@@ -92,6 +99,20 @@ export default Vue.extend({
         this.$message.error(`禁用失败：${data.mesg}`)
       }
       this.isLoading = false
+    },
+    async onStateChange (course: Course) {
+      const { data } = await changeState({
+        courseId: course.id,
+        status: course.status
+      })
+      if (data.code === '000000') {
+        console.log(data.mesg)
+      } else {
+        this.$message.error(`禁用失败：${data.mesg}`)
+      }
+    },
+    onSubmit () {
+      this.loadCourses()
     },
     handleSizeChange (size: number) {
       // console.log(`每页 ${size} 条`)
