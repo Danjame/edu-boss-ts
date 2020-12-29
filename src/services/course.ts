@@ -36,3 +36,12 @@ export const getCourseById = (courseId: number) => {
     }
   })
 }
+
+export const uploadImage = (data: any, onUploadProgress: (progressEvent: any) => void) => {
+  return request({
+    method: 'POST',
+    url: '/boss/course/upload',
+    data,
+    onUploadProgress
+  })
+}
