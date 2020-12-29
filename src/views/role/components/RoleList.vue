@@ -2,7 +2,8 @@
   <div class="role-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
+        <!-- 筛选表单 -->
+        <el-form :inline="true" :model="form" ref="form" class="demo-form-inline" label-width="80px">
           <el-form-item label="输入搜索" prop="name">
             <el-input v-model="form.name" placeholder="角色名称"></el-input>
           </el-form-item>
@@ -11,10 +12,12 @@
             <el-button type="primary" @click="onSubmit" :disabled="isLoading">查询搜索</el-button>
           </el-form-item>
         </el-form>
+        <!-- 添加按钮 -->
         <div class="box-card-btn">
           <el-button @click="handleCreate">添加角色</el-button>
         </div>
       </div>
+      <!-- 表格信息 -->
       <el-table :data="roles" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
         <el-table-column prop="code" label="编号" width="100" align="center" />
         <el-table-column prop="name" label="角色名称" width="180" align="center" />

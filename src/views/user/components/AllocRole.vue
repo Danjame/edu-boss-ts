@@ -1,8 +1,8 @@
 <template>
   <div class="alloc-role">
     <el-dialog title="分配角色" :visible.sync="isVisible">
-      <el-form :model="form">
-        <el-form-item label="活动区域" :label-width="formLabelWidth">
+      <el-form :model="form" label-width="80px">
+        <el-form-item label="活动区域">
           <el-select v-model="form.roleIdList" multiple placeholder="请选择">
             <el-option
               v-for="role in roles"
@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </div>
@@ -40,8 +40,7 @@ export default Vue.extend({
         roleIdList: []
       },
       roles: [],
-      isVisible: false,
-      formLabelWidth: '120px'
+      isVisible: false
     }
   },
   watch: {

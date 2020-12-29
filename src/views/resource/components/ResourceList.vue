@@ -2,7 +2,8 @@
   <div class="resource">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
+        <!-- 筛选表单 -->
+        <el-form :inline="true" :model="form" ref="form" class="demo-form-inline" label-width="80px">
           <el-form-item label="资源名称" prop="name">
             <el-input v-model="form.name" placeholder="资源名称"></el-input>
           </el-form-item>
@@ -11,7 +12,7 @@
           </el-form-item>
           <el-form-item label="资源分类" prop="categoryId">
             <el-select v-model="form.categoryId" placeholder="全部">
-              <el-option v-for="item in category" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              <el-option v-for="item in categories" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -19,11 +20,13 @@
             <el-button type="primary" @click="onSubmit" :disabled="isLoading">查询搜索</el-button>
           </el-form-item>
         </el-form>
+        <!-- 添加与分类按钮 -->
         <div class="box-card-btns">
           <el-button @click="handleCreate">添加</el-button>
           <el-button @click="$router.push({name: 'resource-category'})">资源分类</el-button>
         </div>
       </div>
+      <!-- 表格信息 -->
       <el-table :data="resource" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
         <el-table-column prop="id" label="编号" width="100" align="center" />
         <el-table-column prop="name" label="资源名称" width="180" align="center" />
@@ -42,6 +45,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 页码信息 -->
       <el-pagination
         background
         @size-change="handleSizeChange"

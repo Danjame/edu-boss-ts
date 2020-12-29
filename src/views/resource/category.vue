@@ -4,9 +4,11 @@
       <div slot="header" class="clearfix">
         <el-button @click="handleCreate">添加</el-button>
       </div>
+      <!-- 表格信息 -->
       <el-table
-      :data="tableData"
-      style="width: 100%">
+        :data="tableData"
+        style="width: 100%"
+      >
         <el-table-column prop="id" label="编号" width="100" align="center" />
         <el-table-column prop="name" label="名称" width="180" align="center" />
         <el-table-column prop="createdTime" label="创建时间" align="center" />
@@ -28,16 +30,17 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-dialog :title="form.id ? '编辑分类':'添加分类'" :visible.sync="isVisible" width="30%">
-      <el-form :model="form" :rules="rules" ref="form">
-        <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
+    <!-- 编辑或添加组件 -->
+    <el-dialog :title="form.id ? '编辑分类':'添加分类'" :visible.sync="isVisible" width="40%">
+      <el-form :model="form" :rules="rules" ref="form" label-width="52px">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="排序" prop="sort" :label-width="formLabelWidth">
+        <el-form-item label="排序" prop="sort">
           <el-input v-model.number="form.sort"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </div>
@@ -71,21 +74,11 @@ export default Vue.extend({
           { type: 'number', message: '排序必须为数字' }
         ]
       },
-      isVisible: false,
-      formLabelWidth: '120px'
+      isVisible: false
     }
   },
   created () {
     this.loadAllCategories()
-  },
-  watch: {
-    // 当关闭编辑添加组件，还原表单
-    isVisible: function () {
-      if (!this.isVisible) {
-        (this.$refs.form as Form).resetFields()
-        this.form.id = 0
-      }
-    }
   },
   methods: {
     async loadAllCategories () {
@@ -110,6 +103,10 @@ export default Vue.extend({
     },
     handleCreate () {
       this.isVisible = true
+      if (this.$refs.form) {
+        (this.$refs.form as Form).resetFields()
+        this.form.id = 0
+      }
     },
     handleEdit (index: number, row: Item) {
       // console.log(index, row)

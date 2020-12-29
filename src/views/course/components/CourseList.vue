@@ -1,22 +1,24 @@
 <template>
   <div class="course-list">
-      <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
-          <el-form-item label="课程名称" prop="courseName">
-            <el-input v-model="form.courseName" placeholder="课程名称"></el-input>
-          </el-form-item>
-           <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" placeholder="全部">
-              <el-option label="全部" :value="null"></el-option>
-              <el-option label="上架" :value="1"></el-option>
-              <el-option label="下架" :value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="onSubmit" :disabled="isLoading">查询</el-button>
-            <el-button type="primary">新建课程</el-button>
-          </el-form-item>
-        </el-form>
-      <el-card class="box-card">
+    <!-- 筛选表单 -->
+    <el-form :inline="true" :model="form" ref="form" class="demo-form-inline">
+      <el-form-item label="课程名称" prop="courseName">
+        <el-input v-model="form.courseName" placeholder="课程名称"></el-input>
+      </el-form-item>
+        <el-form-item label="状态" prop="status">
+        <el-select v-model="form.status" placeholder="全部">
+          <el-option label="全部" :value="null"></el-option>
+          <el-option label="上架" :value="1"></el-option>
+          <el-option label="下架" :value="0"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="onSubmit" :disabled="isLoading">查询</el-button>
+        <el-button type="primary" @click="$router.push({name: 'course-create'})">新建课程</el-button>
+      </el-form-item>
+    </el-form>
+    <el-card class="box-card">
+      <!-- 表格信息 -->
       <el-table :data="courses" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
         <el-table-column prop="id" label="ID" width="100" align="center" />
         <el-table-column prop="courseName" label="课程名称" width="180" align="center" />
@@ -36,16 +38,17 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="150" align="center">
-          <template slot-scope="">
+          <template slot-scope="scope">
             <el-button
               size="mini"
-             >编辑</el-button>
+              @click="$router.push({name: 'course-edit', query: {courseId: scope.row.id}})">编辑</el-button>
             <el-button
               size="mini"
               >内容管理</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 页码信息 -->
       <el-pagination
         background
         @size-change="handleSizeChange"

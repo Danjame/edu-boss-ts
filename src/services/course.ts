@@ -26,3 +26,13 @@ export const changeState = (state: State) => {
     params: state
   })
 }
+
+export const getCourseById = (courseId: number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/course/getCourseById',
+    params: {
+      courseId
+    }
+  })
+}

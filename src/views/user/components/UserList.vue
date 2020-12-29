@@ -2,7 +2,8 @@
   <div class="user-list">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-form :inline="true" :model="form" ref="form" label-position="top" class="demo-form-inline">
+        <!-- 筛选表单 -->
+        <el-form :inline="true" :model="form" ref="form" label-position="top">
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>
           </el-form-item>
@@ -25,6 +26,7 @@
           </el-form-item>
         </el-form>
       </div>
+      <!-- 表格信息 -->
       <el-table :data="users" style="width: 100%; margin-bottom: 20px" v-loading="isLoading">
         <el-table-column prop="id" label="用户ID" width="100" align="center" />
         <el-table-column prop="portrait" label="头像" width="180" align="center">
@@ -57,6 +59,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 页码信息 -->
       <el-pagination
         background
         @size-change="handleSizeChange"

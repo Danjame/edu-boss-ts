@@ -1,23 +1,23 @@
 <template>
   <div class="edit-create">
-    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible" width="30%">
-      <el-form :model="form" :rules="rules" ref="form">
-        <el-form-item label="资源名称" prop="name" :label-width="formLabelWidth">
+    <el-dialog :title="form.id ? '编辑资源':'添加资源'" :visible.sync="isVisible" width="40%">
+      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+        <el-form-item label="资源名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="资源路径" prop="url" :label-width="formLabelWidth">
+        <el-form-item label="资源路径" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-          <el-form-item label="资源分类" prop="categoryId" :label-width="formLabelWidth">
+          <el-form-item label="资源分类" prop="categoryId">
             <el-select v-model="form.categoryId" placeholder="请选择资源分类">
               <el-option v-for="item in category" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-         <el-form-item label="描述" prop="description" :label-width="formLabelWidth">
+         <el-form-item label="描述" prop="description">
           <el-input type="textarea" v-model="form.description"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </div>
@@ -50,35 +50,31 @@ export default Vue.extend({
       },
       category: [],
       isVisible: false,
-      isEdit: false,
-      formLabelWidth: '120px'
+      isEdit: false
     }
   },
   created () {
-    this.loadAllCategory()
-    // 打开关闭编辑添加组件
-    EventBus.$on('editCreate', (data: number) => {
-      if (data) {
-        this.form.id = data
-        this.loadEditResourceInfo()
-      }
+    this.loadAllCategories()
+    EventBus.$on('editCreate', (id: number) => {
       this.isVisible = true
-    })
-  },
-  watch: {
-    // 当关闭编辑添加组件，还原表单
-    isVisible: function () {
-      if (!this.isVisible) {
+      if (id) {
+        // 打开编辑组件
+        this.form.id = id
+        this.loadEditResourceInfo()
+      } else if (this.$refs.form) {
+        // 打开添加组件
         (this.$refs.form as Form).resetFields()
         this.form.id = 0
       }
-    }
+    })
   },
   methods: {
-    async loadAllCategory () {
+    async loadAllCategories () {
       const { data } = await getAllCategories()
       if (data.code === '000000') {
         this.category = data.data
+      } else {
+        this.$message.error(`资源分类加载失败：${data.mesg}`)
       }
     },
     async loadEditResourceInfo () {

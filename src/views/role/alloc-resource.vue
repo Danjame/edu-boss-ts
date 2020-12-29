@@ -14,7 +14,7 @@
         ref="el-tree"
       >
       </el-tree>
-      <div class="alloc-menu-btns">
+      <div class="alloc-resource-btns">
         <el-button @click="resetChecked">清空</el-button>
         <el-button type="primary" @click="onSave">保存</el-button>
       </div>
@@ -110,19 +110,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.top-line{
-  border-top: 1px solid #dcdfe6;
-}
-.el-row {
-  padding: 20px;
-    border-left: 1px solid #dcdfe6;
-    border-right: 1px solid #dcdfe6;
-    border-bottom: 1px solid #dcdfe6;
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-.el-col {
-  border-radius: 4px;
+.alloc-resource-btns {
+  margin-top: 20px;
+  text-align: center;
 }
 </style>

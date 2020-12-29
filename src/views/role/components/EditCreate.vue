@@ -1,18 +1,18 @@
 <template>
   <div class="edit-create">
-    <el-dialog :title="form.id ? '编辑角色':'添加角色'" :visible.sync="isVisible" width="30%">
-      <el-form :model="form" :rules="rules" ref="form">
-        <el-form-item label="角色名称" prop="name" :label-width="formLabelWidth">
+    <el-dialog :title="form.id ? '编辑角色':'添加角色'" :visible.sync="isVisible" width="40%">
+      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+        <el-form-item label="角色名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="角色编码" prop="code" :label-width="formLabelWidth">
+        <el-form-item label="角色编码" prop="code">
           <el-input v-model="form.code"></el-input>
         </el-form-item>
-         <el-form-item label="描述" prop="description" :label-width="formLabelWidth">
+         <el-form-item label="描述" prop="description">
           <el-input type="textarea" v-model="form.description"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </div>
@@ -42,34 +42,29 @@ export default Vue.extend({
         description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }]
       },
       isVisible: false,
-      isEdit: false,
-      formLabelWidth: '120px'
+      isEdit: false
     }
   },
   created () {
-    // 打开关闭编辑添加组件
     EventBus.$on('editCreate', (id: number) => {
       this.isVisible = true
       if (id) {
-        this.loadRoleById(id)
-      }
-    })
-  },
-  watch: {
-    // 当关闭编辑添加组件，还原表单
-    isVisible: function () {
-      if (!this.isVisible) {
+        // 打开编辑组件
+        this.form.id = id
+        this.loadRoleById()
+      } else if (this.$refs.form) {
+        // 打开添加组件
         (this.$refs.form as Form).resetFields()
         this.form.id = 0
       }
-    }
+    })
   },
   methods: {
     handleHide () {
       this.isVisible = false
     },
-    async loadRoleById (id: number) {
-      const { data } = await getRoleById(id)
+    async loadRoleById () {
+      const { data } = await getRoleById(this.form.id)
       if (data.code === '000000') {
         this.form = data.data
       } else {
