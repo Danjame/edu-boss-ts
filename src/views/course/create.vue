@@ -1,6 +1,6 @@
 <template>
   <div class="create">
-    <edit-create :isEdit="isEdit" />
+    <edit-create />
   </div>
 </template>
 
@@ -12,15 +12,7 @@ export default Vue.extend({
   name: 'Create',
   components: {
     EditCreate
-  },
-  data () {
-    return {
-      isEdit: false
-    }
   }
-  // methods : {
-
-  // }
 })
 </script>
 

@@ -103,14 +103,12 @@ export default Vue.extend({
     },
     async deleteRole (id: number) {
       const { data } = await deleteRole(id)
-      switch (data.code) {
-        case '000000':
-          // 删除后更新列表
-          this.loadAllRoles()
-          break
-        case '10000':
-          this.$message.error(`删除失败：${data.mesg}`)
-          break
+      if (data.code === '000000') {
+        this.$message.success('删除成功')
+        // 删除后更新列表
+        this.loadAllRoles()
+      } else {
+        this.$message.error(`删除失败：${data.mesg}`)
       }
     },
     handleEdit (index: number, row: Item) {

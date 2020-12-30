@@ -1,6 +1,6 @@
 <template>
   <div class="edit-create">
-    <el-dialog :title="form.id ? '编辑角色':'添加角色'" :visible.sync="isVisible" width="40%">
+    <el-dialog :title="isEdit ? '编辑角色':'添加角色'" :visible.sync="isVisible" width="40%">
       <el-form :model="form" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -31,7 +31,7 @@ export default Vue.extend({
   data () {
     return {
       form: {
-        id: 0,
+        id: undefined,
         code: '',
         name: '',
         description: ''
@@ -47,24 +47,25 @@ export default Vue.extend({
   },
   created () {
     EventBus.$on('editCreate', (id: number) => {
-      this.isVisible = true
       if (id) {
         // 打开编辑组件
-        this.form.id = id
-        this.loadRoleById()
+        this.isEdit = true
+        this.loadRoleById(id)
       } else if (this.$refs.form) {
         // 打开添加组件
         (this.$refs.form as Form).resetFields()
-        this.form.id = 0
+        this.isEdit = false
+        this.form.id = undefined
       }
+      this.isVisible = true
     })
   },
   methods: {
     handleHide () {
       this.isVisible = false
     },
-    async loadRoleById () {
-      const { data } = await getRoleById(this.form.id)
+    async loadRoleById (id: number) {
+      const { data } = await getRoleById(id)
       if (data.code === '000000') {
         this.form = data.data
       } else {
@@ -74,28 +75,16 @@ export default Vue.extend({
     async onSubmit () {
       try {
         await (this.$refs.form as Form).validate()
-        let params
-        if (!this.form.id) {
-          // 添加资源不传id
-          const { code, name, description } = this.form
-          params = { code, name, description }
+        const { data } = await saveOrUpdateRole(this.form)
+        if (data.code === '000000') {
+          // 编辑更新完毕刷新列表
+          EventBus.$emit('updateRoleList')
+          this.handleHide()
+          this.$message.success('提交成功')
         } else {
-          // 编辑资源传id
-          params = this.form
-        }
-        const { data } = await saveOrUpdateRole(params)
-        switch (data.code) {
-          case '000000':
-            // 编辑更新完毕刷新列表
-            EventBus.$emit('updateRoleList')
-            this.handleHide()
-            break
-          case '10000':
-            this.$message.error(`提交失败：${data.mesg}`)
-            break
+          this.$message.error(`提交失败：${data.mesg}`)
         }
       } catch (err) {
-        console.log(err)
         this.$message.error(`提交失败：${err}`)
       }
     }

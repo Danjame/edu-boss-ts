@@ -120,6 +120,7 @@ export default Vue.extend({
       const { data } = await deleteResource(id)
       switch (data.code) {
         case '000000':
+          this.$message.success('删除成功')
           // 删除后更新列表
           this.loadAllResource()
           break

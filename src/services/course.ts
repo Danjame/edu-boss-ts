@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-interface Courses{
+interface CoursePages{
   currentPage?: number
   pageSize?: number
   courseName?: string
@@ -11,7 +11,11 @@ interface State{
   status: number
 }
 
-export const getCourses = (data: Courses) => {
+// interface Course{
+//   id?: number
+// }
+
+export const getCourses = (data: CoursePages) => {
   return request({
     method: 'POST',
     url: '/boss/course/getQueryCourses',
@@ -43,5 +47,13 @@ export const uploadImage = (data: any, onUploadProgress: (progressEvent: any) =>
     url: '/boss/course/upload',
     data,
     onUploadProgress
+  })
+}
+
+export const saveOrUpdateCourse = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/boss/course/saveOrUpdateCourse',
+    data
   })
 }

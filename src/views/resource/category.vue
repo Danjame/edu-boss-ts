@@ -6,7 +6,7 @@
       </div>
       <!-- 表格信息 -->
       <el-table
-        :data="tableData"
+        :data="categories"
         style="width: 100%"
       >
         <el-table-column prop="id" label="编号" width="100" align="center" />
@@ -31,7 +31,7 @@
       </el-table>
     </el-card>
     <!-- 编辑或添加组件 -->
-    <el-dialog :title="form.id ? '编辑分类':'添加分类'" :visible.sync="isVisible" width="40%">
+    <el-dialog :title="isEdit ? '编辑分类':'添加分类'" :visible.sync="isVisible" width="40%">
       <el-form :model="form" :rules="rules" ref="form" label-width="52px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -61,9 +61,9 @@ export default Vue.extend({
   name: 'Category',
   data () {
     return {
-      tableData: [],
+      categories: [],
       form: {
-        id: 0,
+        id: undefined,
         name: '',
         sort: null
       },
@@ -74,7 +74,8 @@ export default Vue.extend({
           { type: 'number', message: '排序必须为数字' }
         ]
       },
-      isVisible: false
+      isVisible: false,
+      isEdit: false
     }
   },
   created () {
@@ -84,37 +85,37 @@ export default Vue.extend({
     async loadAllCategories () {
       const { data } = await getAllCategories()
       if (data.code === '000000') {
-        this.tableData = data.data
+        this.categories = data.data
       } else {
         this.$message.error(`加载失败：${data.mesg}`)
       }
     },
     async deleteCategory (id: number) {
       const { data } = await deleteCategory(id)
-      switch (data.code) {
-        case '000000':
-          // 删除后更新列表
-          this.loadAllCategories()
-          break
-        case '10000':
-          this.$message.error(`删除失败：${data.mesg}`)
-          break
+      if (data.code === '000000') {
+        this.$message.success('删除成功')
+        // 删除后更新列表
+        this.loadAllCategories()
+      } else {
+        this.$message.error(`删除失败：${data.mesg}`)
       }
     },
     handleCreate () {
-      this.isVisible = true
       if (this.$refs.form) {
         (this.$refs.form as Form).resetFields()
-        this.form.id = 0
       }
+      this.isEdit = false
+      this.form.id = undefined
+      this.isVisible = true
     },
     handleEdit (index: number, row: Item) {
       // console.log(index, row)
+      const arr = this.categories.filter((item: Item) => item.id === row.id)
       this.isVisible = true
-      const arr = this.tableData.filter((item: Item) => item.id === row.id)
-      const { id, name, sort } = arr[0]
+      this.isEdit = true
+      // 等待初始化之后再进行赋值，避免影响 (this.$refs.form as Form).resetFields() 出错
       this.$nextTick(() => {
-        this.form = { id, name, sort }
+        this.form = arr[0]
       })
     },
     handleDelete (index: number, row: Item) {
@@ -132,26 +133,13 @@ export default Vue.extend({
     async onSubmit () {
       try {
         await (this.$refs.form as Form).validate()
-        let params
-        if (this.form.id) {
-          // 编辑资源传id
-          params = this.form
+        const { data } = await saveOrUpdateCategory(this.form)
+        if (data.code === '000000') {
+          this.loadAllCategories()
+          this.handleHide()
+          this.$message.success('提交成功')
         } else {
-          // 添加资源不传id
-          const { name, sort } = this.form
-          params = { name, sort }
-        }
-        console.log(params)
-        const { data } = await saveOrUpdateCategory(params)
-        switch (data.code) {
-          case '000000':
-            // 编辑更新完毕刷新列表
-            this.loadAllCategories()
-            this.handleHide()
-            break
-          case '10000':
-            this.$message.error(`提交失败：${data.mesg}`)
-            break
+          this.$message.error(`提交失败：${data.mesg}`)
         }
       } catch (err) {
         this.$message.error(`提交失败：${err}`)

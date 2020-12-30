@@ -12,7 +12,7 @@
       class="avatar-uploader"
       action="https://jsonplaceholder.typicode.com/posts/"
       :show-file-list="false"
-      :before-upload="beforeAvatarUpload"
+      :before-upload="beforeUpload"
       :http-request="handleUpload">
       <img v-if="value" :src="value" class="avatar">
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -42,13 +42,16 @@ export default Vue.extend({
     }
   },
   methods: {
-    beforeAvatarUpload (file: any) {
+    beforeUpload (file: any) {
       // const isJPG = file.type === 'image/jpeg'
       // const isPNG = file.type === 'image/png'
       const isLtl = file.size / 1024 / 1024 < this.limit
       // if (!isJPG) {
       //   this.$message.error('上传头像图片只能是 JPG 格式!')
       // }
+      console.log(file.size)
+      console.log(isLtl)
+      console.log(file.size / 1024 / 1024)
       if (!isLtl) {
         this.$message.error(`上传头像图片大小不能超过 ${this.limit}MB!`)
       }
@@ -61,6 +64,7 @@ export default Vue.extend({
       const { data } = await uploadImage(fd, e => {
         this.percentage = Math.floor(e.loaded / e.total * 100)
       })
+      console.log(data)
       if (data.code === '000000') {
         this.isUploading = false
         this.percentage = 0

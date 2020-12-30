@@ -43,19 +43,12 @@ export default Vue.extend({
       isVisible: false
     }
   },
-  watch: {
-    // 当关闭编辑添加组件，还原表单
-    isVisible: function () {
-      if (!this.isVisible) {
-        this.form = {
-          userId: 0,
-          roleIdList: []
-        }
-      }
-    }
-  },
   created () {
     EventBus.$on('allocateRole', (userId: number) => {
+      this.form = {
+        userId: 0,
+        roleIdList: []
+      }
       // 获取用户ID
       this.form.userId = userId
       // 获取用户的角色
@@ -78,7 +71,7 @@ export default Vue.extend({
       if (data.code === '000000') {
         this.form.roleIdList = data.data.map((role: Role) => role.id)
       } else {
-        this.$message.error(`分配失败：${data.mesg}`)
+        this.$message.error(`加载失败：${data.mesg}`)
       }
     },
     async allocateUserRoles () {
