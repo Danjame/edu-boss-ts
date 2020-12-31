@@ -68,7 +68,7 @@
         <div v-show="currentStep === 2">
           <!-- 秒杀活动 -->
           <el-form-item label="限时秒杀开关" prop="activityCourse">
-             <el-switch
+            <el-switch
               v-model="course.activityCourse"
               active-color="#13ce66"
               inactive-color="#ff4949">
@@ -106,7 +106,16 @@
         <div v-show="currentStep === 3">
           <!-- 课程详情 -->
           <el-form-item label="课程详情" prop="courseDescriptionMarkDown">
-            <el-input type="textarea" v-model="course.courseDescriptionMarkDown"></el-input>
+            <text-editor v-if="showEditor" v-model="course.courseDescriptionMarkDown" />
+          </el-form-item>
+          <el-form-item label="是否发布" prop="status">
+            <el-switch
+              v-model="course.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              :active-value="1"
+              :inactive-value="0">
+            </el-switch>
           </el-form-item>
         </div>
         <el-form-item>
@@ -121,19 +130,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import CourseImage from './CourseImage.vue'
+import TextEditor from '@/components/TextEditor/index.vue'
 import { getCourseById, uploadImage, saveOrUpdateCourse } from '@/services/course'
 import { Form } from 'element-ui'
+
+type Cb = () => void
 
 export default Vue.extend({
   name: 'EditCreate',
   components: {
-    CourseImage
+    CourseImage,
+    TextEditor
   },
   props: {
-    // isEdit: {
-    //   type: Boolean,
-    //   default: true
-    // },
     courseId: {
       type: Number
     }
@@ -200,22 +209,39 @@ export default Vue.extend({
         'activityCourseDTO.amount': [{ required: false }],
         'activityCourseDTO.stock': [{ required: false }],
         courseDescriptionMarkDown: [{ required: false }]
-      }
+      },
+      showEditor: false
     }
   },
   created () {
     if (this.courseId) {
       // 编辑课程
-      this.loadCourseById()
+      this.loadCourseById(() => {
+        this.showEditor = true
+      })
+    } else {
+      // 新增课程
+      this.showEditor = true
     }
   },
   methods: {
-    async loadCourseById () {
+    async loadCourseById (cb: Cb) {
       const { data } = await getCourseById(this.courseId)
       if (data.code === '000000') {
         this.course = data.data
+        // 获取返回数据之后再初始化组件，否则组件没法获取新数据
+        cb()
       } else {
         this.$message.error(`课程信息加载失败：${data.mesg}`)
+      }
+    },
+    async saveOrUpdateCourse () {
+      const { data } = await saveOrUpdateCourse(this.course)
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+        this.$router.push('/course')
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
       }
     },
     next () {
@@ -226,12 +252,7 @@ export default Vue.extend({
         await (this.$refs[formName] as Form).validate(async (v, m) => {
           if (v) {
             // 验证通过
-            const { data } = await saveOrUpdateCourse(this.course)
-            if (data.code === '000000') {
-              console.log(data)
-              this.$message.success('保存成功')
-              this.$router.push('/course')
-            }
+            this.saveOrUpdateCourse()
           } else {
             // 验证失败
             const mesgs = []

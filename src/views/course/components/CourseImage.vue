@@ -4,7 +4,7 @@
       v-if="isUploading"
       type="circle"
       :percentage="percentage"
-      :status="percentage === 100 ? 'success' : undefined"
+      :status="percentage === 100 ? status : undefined"
       :width="178"
       />
     <el-upload
@@ -38,6 +38,7 @@ export default Vue.extend({
   data () {
     return {
       percentage: 0,
+      status: 'success',
       isUploading: false
     }
   },
@@ -49,9 +50,6 @@ export default Vue.extend({
       // if (!isJPG) {
       //   this.$message.error('上传头像图片只能是 JPG 格式!')
       // }
-      console.log(file.size)
-      console.log(isLtl)
-      console.log(file.size / 1024 / 1024)
       if (!isLtl) {
         this.$message.error(`上传头像图片大小不能超过 ${this.limit}MB!`)
       }
@@ -61,16 +59,19 @@ export default Vue.extend({
       this.isUploading = true
       const fd = new FormData()
       fd.append('file', options.file)
+      // 获取上传进度
       const { data } = await uploadImage(fd, e => {
         this.percentage = Math.floor(e.loaded / e.total * 100)
       })
       console.log(data)
       if (data.code === '000000') {
         this.isUploading = false
+        this.status = 'success'
         this.percentage = 0
         this.$emit('input', data.data.name)
         this.$message.success('上传成功')
       } else {
+        this.status = 'exception'
         this.$message.error(`上传失败：${data.mesg}`)
       }
     }
