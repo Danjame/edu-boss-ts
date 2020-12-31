@@ -99,20 +99,33 @@ export default Vue.extend({
         this.form = data.data.menuInfo
       }
     },
-    async onSubmit () {
-      try {
-        await (this.$refs.form as Form).validate()
-        const { data } = await saveOrUpdateMenu(this.form)
-        if (data.code === '000000') {
-          this.$message.success('提交成功')
-          this.$router.back()
-        }
-      } catch (err) {
-        console.log('提交失败', err)
+    async saveOrUpdateMenu () {
+      const { data } = await saveOrUpdateMenu(this.form)
+      if (data.code === '000000') {
+        this.$message.success('提交成功')
+        this.$router.back()
+      } else {
+        this.$message.error(`提交失败：${data.mesg}`)
       }
     },
-    resetForm (form: string) {
-      (this.$refs[form] as Form).resetFields()
+    resetForm (formName: string) {
+      (this.$refs[formName] as Form).resetFields()
+    },
+    onSubmit (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateMenu()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
     }
   }
 })

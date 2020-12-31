@@ -33,6 +33,11 @@ interface Menu{
   subMenuList: []
 }
 
+interface RoleMenus{
+  roleId: number
+  menuIdList: any[]
+}
+
 export default Vue.extend({
   name: 'AllocMenu',
   data () {
@@ -67,6 +72,14 @@ export default Vue.extend({
         this.$message.error(`角色菜单加载失败：${data.mesg}`)
       }
     },
+    async allocateRoleMenus (rm: RoleMenus) {
+      const { data } = await allocateRoleMenus(rm)
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
+    },
     // 收集选中项的key
     getCheckedKeys (menus: []) {
       menus.forEach((m: Menu) => {
@@ -81,17 +94,12 @@ export default Vue.extend({
     resetChecked () {
       (this.$refs['el-tree'] as Tree).setCheckedKeys([])
     },
-    async onSave () {
+    onSave () {
       const menuIdList = (this.$refs['el-tree'] as Tree).getCheckedKeys()
-      const { data } = await allocateRoleMenus({
+      this.allocateRoleMenus({
         roleId: this.roleId,
         menuIdList
       })
-      if (data.code === '000000') {
-        this.$message.success('保存成功')
-      } else {
-        this.$message.error(`保存失败：${data.mesg}`)
-      }
     }
   }
 })

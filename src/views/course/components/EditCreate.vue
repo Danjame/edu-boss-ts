@@ -247,25 +247,21 @@ export default Vue.extend({
     next () {
       if (this.currentStep++ > 3) this.currentStep = 0
     },
-    async onSubmit (formName: string) {
-      try {
-        await (this.$refs[formName] as Form).validate(async (v, m) => {
-          if (v) {
-            // 验证通过
-            this.saveOrUpdateCourse()
-          } else {
-            // 验证失败
-            const mesgs = []
-            for (const key in m) {
-              mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
-            }
-            this.$message.error(`${mesgs}`)
-            return false
+    onSubmit (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateCourse()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
           }
-        })
-      } catch (err) {
-        this.$message.error(`提交失败：${err}`)
-      }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
     }
   }
 })

@@ -14,7 +14,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
-        <el-button type="primary" @click="onSubmit">确 定</el-button>
+        <el-button type="primary" @click="onSubmit('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -72,21 +72,32 @@ export default Vue.extend({
         this.$message.error(`角色id加载失败：${data.mesg}`)
       }
     },
-    async onSubmit () {
-      try {
-        await (this.$refs.form as Form).validate()
-        const { data } = await saveOrUpdateRole(this.form)
-        if (data.code === '000000') {
-          // 编辑更新完毕刷新列表
-          EventBus.$emit('updateRoleList')
-          this.handleHide()
-          this.$message.success('提交成功')
-        } else {
-          this.$message.error(`提交失败：${data.mesg}`)
-        }
-      } catch (err) {
-        this.$message.error(`提交失败：${err}`)
+    async saveOrUpdateRole () {
+      const { data } = await saveOrUpdateRole(this.form)
+      if (data.code === '000000') {
+        // 编辑更新完毕刷新列表
+        EventBus.$emit('updateRoleList')
+        this.handleHide()
+        this.$message.success('提交成功')
+      } else {
+        this.$message.error(`提交失败：${data.mesg}`)
       }
+    },
+    onSubmit (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateRole()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
     }
   }
 })

@@ -38,6 +38,11 @@ interface Category{
   id: number
 }
 
+interface RoleResource{
+  roleId: number
+  resourceIdList: any[]
+}
+
 export default Vue.extend({
   name: 'AllocResource',
   data () {
@@ -80,6 +85,14 @@ export default Vue.extend({
         this.$message.error(`角色资源加载失败：${data.mesg}`)
       }
     },
+    async allocateRoleResources (rr: RoleResource) {
+      const { data } = await allocateRoleResources(rr)
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
+    },
     getCheckedKeys (resource: []) {
       resource.forEach((r: Resource) => {
         if (r.selected) {
@@ -93,17 +106,12 @@ export default Vue.extend({
     resetChecked () {
       (this.$refs['el-tree'] as Tree).setCheckedKeys([])
     },
-    async onSave () {
+    onSave () {
       const resourceIdList = (this.$refs['el-tree'] as Tree).getCheckedKeys()
-      const { data } = await allocateRoleResources({
+      this.allocateRoleResources({
         roleId: this.roleId,
         resourceIdList
       })
-      if (data.code === '000000') {
-        this.$message.success('保存成功')
-      } else {
-        this.$message.error(`保存失败：${data.mesg}`)
-      }
     }
   }
 })

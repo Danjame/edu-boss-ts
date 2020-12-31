@@ -19,7 +19,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer" style="text-align:center">
         <el-button @click="handleHide">取 消</el-button>
-        <el-button type="primary" @click="onSubmit">确 定</el-button>
+        <el-button type="primary" @click="onSubmit('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -86,23 +86,34 @@ export default Vue.extend({
         this.$message.error(`加载失败：${data.err}`)
       }
     },
+    async saveOrUpdateResource () {
+      const { data } = await saveOrUpdateResource(this.form)
+      if (data.code === '000000') {
+        EventBus.$emit('updateResourceList')
+        this.handleHide()
+        this.$message.success('提交成功')
+      } else {
+        this.$message.error(`提交失败：${data.mesg}`)
+      }
+    },
     handleHide () {
       this.isVisible = false
     },
-    async onSubmit () {
-      try {
-        await (this.$refs.form as Form).validate()
-        const { data } = await saveOrUpdateResource(this.form)
-        if (data.code === '000000') {
-          EventBus.$emit('updateResourceList')
-          this.handleHide()
-          this.$message.success('提交成功')
+    onSubmit (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateResource()
         } else {
-          this.$message.error(`提交失败：${data.mesg}`)
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
         }
-      } catch (err) {
-        this.$message.error(`提交失败：${err}`)
-      }
+      })
     }
   }
 })

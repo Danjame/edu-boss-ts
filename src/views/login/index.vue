@@ -19,7 +19,7 @@
         class="login-btn"
         type="primary"
         :loading="isLoginLoading"
-        @click="onSubmit"
+        @click="onSubmit('form')"
         >
           登陆
         </el-button>
@@ -55,22 +55,33 @@ export default Vue.extend({
     }
   },
   methods: {
-    async onSubmit () {
-      try {
-        await (this.$refs.form as Form).validate()
-        this.isLoginLoading = true
-        const { data } = await login(this.form)
-        if (data.state !== 1) {
-          this.$message.error(data.message)
-        } else {
-          this.$store.commit('setUser', data.content)
-          this.$message.success('登陆成功')
-          this.$router.push(this.$route.query.redirect as string || '/')
-        }
-      } catch (err) {
-        console.log('登陆失败', err)
+    async login () {
+      this.isLoginLoading = true
+      const { data } = await login(this.form)
+      if (data.state !== 1) {
+        this.$message.error(data.message)
+      } else {
+        this.$store.commit('setUser', data.content)
+        this.$message.success('登陆成功')
+        this.$router.push(this.$route.query.redirect as string || '/')
       }
       this.isLoginLoading = false
+    },
+    onSubmit (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.login()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
     }
   }
 })
