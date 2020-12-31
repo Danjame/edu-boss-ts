@@ -24,7 +24,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAllRource, getAllCategories, getRoleResources, allocateRoleResources } from '@/services/resource'
+import { getAllRource, getRoleResources, allocateRoleResources } from '@/services/resource'
+import { getAllCategories } from '@/services/resource-category'
 import { Tree } from 'element-ui'
 
 interface Resource{

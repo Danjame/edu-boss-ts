@@ -17,12 +17,6 @@ interface ResourceItem{
   description?: string
 }
 
-interface Category{
-  id?: number
-  name?: string
-  sort?: number | null
-}
-
 interface AllocResources{
   roleId: number
   resourceIdList: number[]
@@ -32,13 +26,6 @@ export const getAllRource = () => {
   return request({
     method: 'GET',
     url: '/boss/resource/getAll'
-  })
-}
-
-export const getAllCategories = () => {
-  return request({
-    method: 'GET',
-    url: '/boss/resource/category/getAll'
   })
 }
 
@@ -69,21 +56,6 @@ export const deleteResource = (resourceId: number) => {
   return request({
     method: 'DELETE',
     url: `/boss/resource/${resourceId}`
-  })
-}
-
-export const saveOrUpdateCategory = (data: Category) => {
-  return request({
-    method: 'POST',
-    url: '/boss/resource/category/saveOrderUpdate',
-    data
-  })
-}
-
-export const deleteCategory = (categoryId: number) => {
-  return request({
-    method: 'DELETE',
-    url: `/boss/resource/category/${categoryId}`
   })
 }
 

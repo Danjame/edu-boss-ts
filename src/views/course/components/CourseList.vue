@@ -44,7 +44,7 @@
               @click="$router.push({name: 'course-edit', query: {courseId: scope.row.id}})">编辑</el-button>
             <el-button
               size="mini"
-              >内容管理</el-button>
+              @click="$router.push({name: 'course-section', query: {courseId: scope.row.id, courseName: scope.row.courseName}})">内容管理</el-button>
           </template>
         </el-table-column>
       </el-table>

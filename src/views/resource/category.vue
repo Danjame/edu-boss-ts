@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAllCategories, saveOrUpdateCategory, deleteCategory } from '@/services/resource'
+import { getAllCategories, saveOrUpdateCategory, deleteCategory } from '@/services/resource-category'
 import { Form } from 'element-ui'
 
 interface Item {

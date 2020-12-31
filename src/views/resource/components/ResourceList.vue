@@ -64,7 +64,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllCategories, getResourcePages, deleteResource } from '@/services/resource'
+import { getResourcePages, deleteResource } from '@/services/resource'
+import { getAllCategories } from '@/services/resource-category'
 import { Form } from 'element-ui'
 
 interface Item {

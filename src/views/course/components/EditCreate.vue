@@ -78,17 +78,15 @@
             <el-form-item label="开始时间" prop="activityCourseDTO.beginTime">
               <el-date-picker
                 v-model="course.activityCourseDTO.beginTime"
-                type="date"
-                placeholder="选择日期时间"
-                value-format="yyyy-MM-dd">
+                type="datetime"
+                placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="结束时间" prop="activityCourseDTO.endTime">
               <el-date-picker
                 v-model="course.activityCourseDTO.endTime"
-                type="date"
-                placeholder="选择日期时间"
-                value-format="yyyy-MM-dd">
+                type="datetime"
+                placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="秒杀价" prop="activityCourseDTO.amount">

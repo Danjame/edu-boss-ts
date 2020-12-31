@@ -28,7 +28,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import EventBus from '@/eventbus/eventbus'
-import { getAllCategories, getEditResourceInfo, saveOrUpdateResource } from '@/services/resource'
+import { getEditResourceInfo, saveOrUpdateResource } from '@/services/resource'
+import { getAllCategories } from '@/services/resource-category'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
