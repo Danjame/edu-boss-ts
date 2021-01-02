@@ -20,6 +20,16 @@ export const getSectionLesson = (courseId: number) => {
   })
 }
 
+export const getSectionById = (sectionId: number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/course/section/getBySectionId',
+    params: {
+      sectionId
+    }
+  })
+}
+
 export const saveOrUpdateSection = (data: Section) => {
   return request({
     method: 'POST',

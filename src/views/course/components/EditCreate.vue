@@ -132,7 +132,7 @@ import TextEditor from '@/components/TextEditor/index.vue'
 import { getCourseById, uploadImage, saveOrUpdateCourse } from '@/services/course'
 import { Form } from 'element-ui'
 
-type Cb = () => void
+type CB = () => void
 
 export default Vue.extend({
   name: 'EditCreate',
@@ -223,7 +223,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    async loadCourseById (cb: Cb) {
+    async loadCourseById (cb: CB) {
       const { data } = await getCourseById(this.courseId)
       if (data.code === '000000') {
         this.course = data.data

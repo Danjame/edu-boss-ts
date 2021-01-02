@@ -19,7 +19,7 @@
           <!-- 章节 -->
           <span v-if="data.sectionName" class="actions">
             <el-button @click.stop="handleEditCreateSection(data)">编辑</el-button>
-            <el-button type="primary" @click.stop="handleEditCreateLesson">添加课时</el-button>
+            <el-button type="primary" @click.stop="handleEditCreateLesson(data)">添加课时</el-button>
             <el-button>状态</el-button>
           </span>
           <!-- 课时 -->
@@ -50,7 +50,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="isSectionVisible = false">取 消</el-button>
-          <el-button type="primary" @click="isSectionVisible = false">确 定</el-button>
+          <el-button type="primary" @click="handleSubmitSection('sectionForm')">确 定</el-button>
         </div>
       </el-dialog>
       <!-- 编辑添加课时 -->
@@ -60,7 +60,7 @@
             <el-input disabled :placeholder="courseName"></el-input>
           </el-form-item>
           <el-form-item label="章节名称">
-            <el-input disabled :placeholder="section.sectionName"></el-input>
+            <el-input disabled :placeholder="lesson.sectionName"></el-input>
           </el-form-item>
           <el-form-item label="课时名称" prop="theme">
             <el-input v-model="lesson.theme"></el-input>
@@ -85,7 +85,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="isLessonVisible = false">取 消</el-button>
-          <el-button type="primary" @click="isLessonVisible = false">确 定</el-button>
+          <el-button type="primary" @click="handleSubmitLesson('lessonForm')">确 定</el-button>
         </div>
       </el-dialog>
     </el-card>
@@ -94,8 +94,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getSectionLesson, saveOrUpdateSection } from '@/services/course-section'
-import { saveOrUpdateLesson } from '@/services/course-lesson'
+import { getSectionLesson, getSectionById, saveOrUpdateSection } from '@/services/course-section'
+import { getLessonById, saveOrUpdateLesson } from '@/services/course-lesson'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
@@ -115,13 +115,13 @@ export default Vue.extend({
       // 章节
       isSectionVisible: false,
       section: {
-        id: 0,
+        // id: 0,
         courseId: 0,
-        courseName: '',
+        // courseName: '',
         sectionName: '',
         description: '',
         orderNum: 0,
-        status: 0
+        status: 0 // 0-隐藏，1-待更新，2-已发布
       },
       sectionRules: {
         courseName: [{ required: true, message: '请输入课程名称', trigger: 'blur' }],
@@ -130,14 +130,15 @@ export default Vue.extend({
       // 课时
       isLessonVisible: false,
       lesson: {
-        id: 0,
+        // id: 0,
         courseId: 0,
         sectionId: 0,
+        sectionName: '',
         theme: '',
         duration: 0,
         isFree: false,
         orderNum: 0,
-        status: 0
+        status: 0 // 0-隐藏，1-未发布，2-已发布
       },
       lessonRules: {
         theme: [{ required: true, message: '请输入课时名称', trigger: 'blur' }],
@@ -185,31 +186,113 @@ export default Vue.extend({
       }
       this.isLoading = false
     },
+    async loadSectionById (sectionId: number) {
+      const { data } = await getSectionById(sectionId)
+      if (data.code === '000000') {
+        this.section = data.data
+        console.log('加载成功')
+      } else {
+        this.$message.error(`加载章节信息失败：${data.mesg}`)
+      }
+    },
+    async loadLessonById (lessonId: number) {
+      const { data } = await getLessonById(lessonId)
+      if (data.code === '000000') {
+        this.lesson = data.data
+        console.log('加载成功')
+      } else {
+        this.$message.error(`加载课时信息失败：${data.mesg}`)
+      }
+    },
+    async saveOrUpdateSection () {
+      const { data } = await saveOrUpdateSection(this.section)
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+        this.isSectionVisible = false
+        this.loadSectionLesson()
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
+    },
+    async saveOrUpdateLesson () {
+      const { data } = await saveOrUpdateLesson(this.lesson)
+      if (data.code === '000000') {
+        this.$message.success('保存成功')
+        this.isLessonVisible = false
+        this.loadSectionLesson()
+      } else {
+        this.$message.error(`保存失败：${data.mesg}`)
+      }
+    },
     handleEditCreateSection (data: any) {
       this.isSectionVisible = true
       if (data.courseId) {
-        // 编辑
-        console.log('编辑章节')
-        this.$nextTick(() => {
-          this.section = data
-        })
+        // 编辑章节
+        this.loadSectionById(data.id)
       } else {
-        // 添加
-        console.log('添加章节');
-        (this.$refs.sectionForm as Form).resetFields()
+        // 添加章节
+        this.section = {
+          // id: 0,
+          courseId: this.courseId,
+          // courseName: '',
+          sectionName: '',
+          description: '',
+          orderNum: 0,
+          status: 0
+        }
       }
     },
     handleEditCreateLesson (data: any) {
       this.isLessonVisible = true
-      if (data.courseId) {
-        // 编辑
-        this.lesson = data
+      if (data.theme) {
+        // 编辑课时
+        this.loadLessonById(data.id)
       } else {
-        // 添加
-        if (this.$refs.lessonFrom) {
-          (this.$refs.lessonFrom as Form).resetFields()
+        // 添加课时
+        this.lesson = {
+          // id: 0,
+          courseId: this.courseId,
+          sectionId: data.id,
+          sectionName: data.sectionName,
+          theme: '',
+          duration: 0,
+          isFree: false,
+          orderNum: 0,
+          status: 0
         }
       }
+    },
+    handleSubmitSection (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateSection()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
+    },
+    handleSubmitLesson (formName: string) {
+      (this.$refs[formName] as Form).validate((v, m) => {
+        if (v) {
+          // 验证通过
+          this.saveOrUpdateLesson()
+        } else {
+          // 验证失败
+          const mesgs = []
+          for (const key in m) {
+            mesgs.push(` ${mesgs.length + 1}：${m[key][0].message}`)
+          }
+          this.$message.error(`${mesgs}`)
+          return false
+        }
+      })
     }
   }
 })

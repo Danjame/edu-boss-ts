@@ -125,7 +125,8 @@ export default Vue.extend({
       this.isEdit = true
       // 等待初始化之后再进行赋值，避免影响 (this.$refs.form as Form).resetFields() 出错
       this.$nextTick(() => {
-        this.form = arr[0]
+        // 深拷贝赋值，防止输入时响应式改变表格内容
+        this.form = JSON.parse(JSON.stringify(arr[0]))
       })
     },
     handleDelete (index: number, row: Item) {

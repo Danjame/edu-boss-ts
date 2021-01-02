@@ -11,6 +11,16 @@ interface Lesson{
   status?: number
 }
 
+export const getLessonById = (lessonId: number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/course/lesson/getById',
+    params: {
+      lessonId
+    }
+  })
+}
+
 export const saveOrUpdateLesson = (data: Lesson) => {
   return request({
     method: 'POST',
