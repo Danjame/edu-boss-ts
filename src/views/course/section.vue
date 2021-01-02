@@ -20,13 +20,31 @@
           <span v-if="data.sectionName" class="actions">
             <el-button @click.stop="handleEditCreateSection(data)">编辑</el-button>
             <el-button type="primary" @click.stop="handleEditCreateLesson(data)">添加课时</el-button>
-            <el-button>状态</el-button>
+            <el-select
+              class="select-status"
+              v-model="data.status"
+              placeholder="请选择"
+              @change="handleSectionStatusChange(data)"
+            >
+              <el-option label="已隐藏" :value="0" />
+              <el-option label="待更新" :value="1" />
+              <el-option label="已发布" :value="2" />
+            </el-select>
           </span>
           <!-- 课时 -->
           <span v-else class="actions">
             <el-button @click.stop="handleEditCreateLesson(data)">编辑</el-button>
-            <el-button type="success">上传视频</el-button>
-            <el-button>状态</el-button>
+            <el-button type="success" @click="$router.push({name: 'course-video', query: {courseName, theme: data.theme}})">上传视频</el-button>
+            <el-select
+              class="select-status"
+              v-model="data.status"
+              placeholder="请选择"
+              @change="handleLessonStatusChange(data)"
+            >
+              <el-option label="已隐藏" :value="0" />
+              <el-option label="未发布" :value="1" />
+              <el-option label="已发布" :value="2" />
+            </el-select>
           </span>
         </div>
       </el-tree>
@@ -97,6 +115,27 @@ import Vue from 'vue'
 import { getSectionLesson, getSectionById, saveOrUpdateSection } from '@/services/course-section'
 import { getLessonById, saveOrUpdateLesson } from '@/services/course-lesson'
 import { Form } from 'element-ui'
+
+interface Section{
+  id?: number
+  courseId: number
+  sectionName: string
+  description: string
+  orderNum: number
+  status: number
+}
+
+interface Lesson{
+  id?: number
+  courseId: number
+  sectionId: number
+  sectionName: string
+  theme: string
+  duration: number
+  isFree: boolean
+  orderNum: number
+  status: number
+}
 
 export default Vue.extend({
   name: 'CourseSection',
@@ -204,8 +243,8 @@ export default Vue.extend({
         this.$message.error(`加载课时信息失败：${data.mesg}`)
       }
     },
-    async saveOrUpdateSection () {
-      const { data } = await saveOrUpdateSection(this.section)
+    async saveOrUpdateSection (section: Section) {
+      const { data } = await saveOrUpdateSection(section)
       if (data.code === '000000') {
         this.$message.success('保存成功')
         this.isSectionVisible = false
@@ -214,8 +253,8 @@ export default Vue.extend({
         this.$message.error(`保存失败：${data.mesg}`)
       }
     },
-    async saveOrUpdateLesson () {
-      const { data } = await saveOrUpdateLesson(this.lesson)
+    async saveOrUpdateLesson (lesson: Lesson) {
+      const { data } = await saveOrUpdateLesson(lesson)
       if (data.code === '000000') {
         this.$message.success('保存成功')
         this.isLessonVisible = false
@@ -262,11 +301,17 @@ export default Vue.extend({
         }
       }
     },
+    handleSectionStatusChange (data: any) {
+      this.saveOrUpdateSection(data)
+    },
+    handleLessonStatusChange (data: any) {
+      this.saveOrUpdateLesson(data)
+    },
     handleSubmitSection (formName: string) {
       (this.$refs[formName] as Form).validate((v, m) => {
         if (v) {
           // 验证通过
-          this.saveOrUpdateSection()
+          this.saveOrUpdateSection(this.section)
         } else {
           // 验证失败
           const mesgs = []
@@ -282,7 +327,7 @@ export default Vue.extend({
       (this.$refs[formName] as Form).validate((v, m) => {
         if (v) {
           // 验证通过
-          this.saveOrUpdateLesson()
+          this.saveOrUpdateLesson(this.lesson)
         } else {
           // 验证失败
           const mesgs = []
@@ -319,5 +364,10 @@ export default Vue.extend({
 
 ::v-deep .el-dialog{
   min-width: 400px;
+}
+
+.select-status{
+  width: 100px;
+  margin-left: 10px;
 }
 </style>
