@@ -38,8 +38,10 @@ export default Vue.extend({
   data () {
     return {
       form: {
-        phone: '15510792995',
-        password: '111111'
+        phone: '',
+        password: ''
+        // phone: '15510792995',
+        // password: '111111'
       },
       rules: {
         phone: [

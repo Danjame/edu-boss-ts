@@ -13,6 +13,9 @@ export default Vue.extend({
   components: {
     EditCreate
   },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '编辑课程')
+  },
   data () {
     return {
       courseId: Number(this.$route.query.courseId)

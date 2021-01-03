@@ -2,7 +2,7 @@
   <div class="header">
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">Home</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+      <el-breadcrumb-item v-if="$store.state.breadcrumbTitle">{{ $store.state.breadcrumbTitle }}</el-breadcrumb-item>
     </el-breadcrumb>
     <el-dropdown>
       <span class="el-dropdown-link">

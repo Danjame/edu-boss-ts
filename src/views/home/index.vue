@@ -1,5 +1,8 @@
 <template>
-  <div class="home"></div>
+  <div class="home">
+    <h2>Lagou Task 3-6</h2>
+    <div>By Danjun Xie</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,4 +13,8 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.home{
+  text-align: center;
+}
+</style>

@@ -12,6 +12,9 @@ export default Vue.extend({
   name: 'Create',
   components: {
     EditCreate
+  },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '新建课程')
   }
 })
 </script>

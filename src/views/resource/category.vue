@@ -1,8 +1,9 @@
 <template>
   <div class="category">
     <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <el-button @click="handleCreate">添加</el-button>
+      <div slot="header" class="header">
+        <span style="flex: 1"><el-button type="text" icon="el-icon-back" @click="$router.push('/resource')">返回</el-button></span>
+        <span style="flex: 1"><el-button @click="handleCreate">添加</el-button></span>
       </div>
       <!-- 表格信息 -->
       <el-table
@@ -79,6 +80,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '资源分类')
     this.loadAllCategories()
   },
   methods: {
@@ -162,4 +164,9 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

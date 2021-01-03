@@ -19,7 +19,7 @@ const routes: Array<RouteConfig> = [
     },
     children: [
       {
-        path: '',
+        path: '/',
         name: 'home',
         component: () => import(/* webpackChunkName: 'home' */ '@/views/home/index.vue')
       },

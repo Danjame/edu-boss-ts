@@ -12,6 +12,9 @@ export default Vue.extend({
   name: 'MenuCreate',
   components: {
     EditCreate
+  },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '添加菜单')
   }
 })
 </script>

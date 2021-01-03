@@ -2,6 +2,7 @@
   <div class="course-section">
     <el-card style="min-width: 800px">
       <div slot="header" class="header">
+        <el-button type="text" icon="el-icon-back" @click="$router.push('/course')">返回</el-button>
         <span>课程：{{ courseName }}</span>
         <el-button type="primary" icon="el-icon-plus" @click="handleEditCreateSection">添加章节</el-button>
       </div>
@@ -187,6 +188,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '课程内容管理')
     this.loadSectionLesson()
   },
   methods: {

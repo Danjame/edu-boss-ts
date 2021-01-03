@@ -47,6 +47,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '菜单管理')
     this.loadAllMenus()
   },
   methods: {

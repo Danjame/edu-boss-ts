@@ -51,6 +51,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '课时视频上传')
     this.initUploader()
   },
   methods: {

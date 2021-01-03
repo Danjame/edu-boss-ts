@@ -15,6 +15,9 @@ export default Vue.extend({
   components: {
     UserList,
     AllocRole
+  },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '用户管理')
   }
 })
 </script>

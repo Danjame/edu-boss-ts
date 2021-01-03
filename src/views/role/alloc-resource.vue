@@ -1,8 +1,9 @@
 <template>
   <div class="alloc-resource">
     <el-card class="box-card">
-      <div slot="header">
-        <span>分配资源</span>
+      <div slot="header" class="header">
+        <span style="flex: 1"><el-button type="text" icon="el-icon-back" @click="$router.push('/role')">返回</el-button></span>
+        <span style="flex: 1">分配资源</span>
       </div>
       <el-tree
         :data="resource"
@@ -58,6 +59,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '分配资源')
     this.loadAllReourceAndCategories()
     this.loadRoleResources()
   },
@@ -122,5 +124,11 @@ export default Vue.extend({
 .alloc-resource-btns {
   margin-top: 20px;
   text-align: center;
+}
+
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

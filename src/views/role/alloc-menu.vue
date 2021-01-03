@@ -1,8 +1,9 @@
 <template>
   <div class="alloc-menu">
     <el-card>
-      <div slot="header" class="clearfix">
-        分配菜单
+      <div slot="header" class="header">
+        <span style="flex: 1"><el-button type="text" icon="el-icon-back" @click="$router.push('/role')">返回</el-button></span>
+        <span style="flex: 1">分配菜单</span>
       </div>
       <el-tree
         :data="menus"
@@ -52,6 +53,7 @@ export default Vue.extend({
     }
   },
   created () {
+    this.$store.commit('setBreadcrumbTitle', '分配菜单')
     this.loadMenuNodeList()
     this.loadRoleMenus()
   },
@@ -109,5 +111,10 @@ export default Vue.extend({
 .alloc-menu-btns {
   margin-top: 20px;
   text-align: center;
+}
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

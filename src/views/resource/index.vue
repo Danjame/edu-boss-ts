@@ -15,6 +15,9 @@ export default Vue.extend({
   components: {
     ResourceList,
     EditCreate
+  },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '资源管理')
   }
 })
 </script>

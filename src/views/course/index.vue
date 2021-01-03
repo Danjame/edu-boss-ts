@@ -12,6 +12,9 @@ export default Vue.extend({
   name: 'Course',
   components: {
     CourseList
+  },
+  created () {
+    this.$store.commit('setBreadcrumbTitle', '课程管理')
   }
 })
 </script>

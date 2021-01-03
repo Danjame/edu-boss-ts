@@ -1,8 +1,9 @@
 <template>
   <div class="edit-create">
     <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>{{isEdit? '编辑菜单' : '添加菜单'}}</span>
+      <div slot="header" class="header">
+        <span style="flex: 1"><el-button type="text" icon="el-icon-back" @click="$router.push('/menu')">返回</el-button></span>
+        <span style="flex: 1">{{isEdit? '编辑菜单' : '添加菜单'}}</span>
       </div>
       <el-form :model="form" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="菜单名称" prop="name">
@@ -132,4 +133,9 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

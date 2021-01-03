@@ -1,5 +1,6 @@
 <template>
   <div class="edit-create">
+    <el-button type="text" icon="el-icon-back" @click="$router.push('/course')">返回</el-button>
     <el-card>
       <div slot="header" class="clearfix">
         <el-steps :active="currentStep" finish-status="success">
