@@ -34,7 +34,7 @@
           <!-- 课时 -->
           <span v-else class="actions">
             <el-button @click.stop="handleEditCreateLesson(data)">编辑</el-button>
-            <el-button type="success" @click="$router.push({name: 'course-video', query: {courseName, theme: data.theme}})">上传视频</el-button>
+            <el-button type="success" @click="$router.push({name: 'course-video', query: {courseName, lessonId: data.id, theme: data.theme}})">上传视频</el-button>
             <el-select
               class="select-status"
               v-model="data.status"
